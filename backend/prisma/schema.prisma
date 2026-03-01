@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  REQUESTED
+  ACTIVE
+  CANCELLED
+}
+
+enum AuditEntityType {
+  USER
+  SUBSCRIPTION
+}
+
+model User {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  name         String
+  passwordHash String
+  role         Role    @default(USER)
+  isActive     Boolean @default(true)
+  profileImageUrl String?
+
+  subscriptions Subscription[]
+  auditLogs     AuditLog[] 
+
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id      String @id @default(uuid())
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  toolName    String
+  cost        Decimal            @db.Decimal(10, 2)
+  renewalDate DateTime
+  status      SubscriptionStatus
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+// AuditLog
+model AuditLog {
+  id String @id @default(uuid())
+
+  actorId String
+  actor   User @relation(fields: [actorId], references: [id])
+
+  entityType AuditEntityType
+  entityId   String
+
+  action String
+  before Json
+  after  Json
+
+  createdAt DateTime @default(now())
+}
