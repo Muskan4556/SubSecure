@@ -1,34 +1,40 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import prisma from "./lib/prisma";
+import authRoute from "./routes/authRoute";
 
 const app = express();
 
-// Global middleware
-
-// Security headers
+// Middleware
 app.use(helmet());
-
-// JSON body parsing
 app.use(express.json());
+app.use(cookieParser());
 
-// CORS
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(","),
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: process.env.CLIENT_URL?.split(","),
     credentials: true,
   }),
 );
 
 // Routes
-app.get("/health", (req, res) => {
-  return res.status(200).json({ status: "OK" });
+app.get("/api/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: "OK" });
+  } catch {
+    res.status(503).json({ status: "DB_DOWN" });
+  }
 });
 
-const PORT_NO = 4000;
+app.use("/api/auth", authRoute);
 
-app.listen(PORT_NO, () =>
-  console.log(`Server is running on port no: ${PORT_NO}`),
-);
+// Start server
+const PORT = Number(process.env.PORT) || 4000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+});
