@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,7 +21,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { fadeUp, staggerContainer } from "@/lib/animations";
-import { DEMO_CREDENTIALS } from "@/lib/types/auth";
+import { DEMO_CREDENTIALS } from "@/lib/types/auth-types";
+import { useLogin } from "@/apis/auth/auth-api";
 
 // Validation
 
@@ -33,6 +35,7 @@ type SigninFormValues = z.infer<typeof SigninSchema>;
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -43,6 +46,8 @@ export default function Login() {
     resolver: zodResolver(SigninSchema),
   });
 
+  const { mutateAsync: login } = useLogin();
+
   const fillDemo = () => {
     reset(DEMO_CREDENTIALS);
     toast.info("Demo credentials filled in");
@@ -50,9 +55,9 @@ export default function Login() {
 
   const onSubmit = async (data: SigninFormValues) => {
     try {
-      // TODO: wire up API call
-      console.log("Login payload:", data);
+      await login(data);
       toast.success("Signed in successfully");
+      router.push("/dashboard");
     } catch {
       toast.error("Invalid credentials. Please try again.");
     }
