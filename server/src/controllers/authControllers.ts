@@ -117,7 +117,7 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-export const refresh = (req: Request, res: Response) => {
+export const refresh = async (req: Request, res: Response) => {
   const token = req.cookies?.refreshToken;
   if (!token) {
     return res.status(401).json({ message: "Missing refresh token" });
@@ -128,8 +128,21 @@ export const refresh = (req: Request, res: Response) => {
       userId: string;
     };
 
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { id: true, email: true, name: true, role: true, isActive: true, profileImageUrl: true, createdAt: true },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({ message: "Account is disabled" });
+    }
+
     const accessToken = generateAccessToken({ userId: payload.userId });
-    return res.json({ accessToken });
+    return res.json({ accessToken, user });
   } catch(err) {
     console.error(err);
     return res.status(403).json({ message: "Invalid refresh token" });
