@@ -38,7 +38,7 @@ export const signin = async (req: Request, res: Response) => {
       });
     }
 
-    const accessToken = generateAccessToken({ userId: user.id });
+    const accessToken = generateAccessToken({ userId: user.id, role: user.role });
     const refreshToken = generateRefreshToken({ userId: user.id });
 
     res.cookie(
@@ -48,10 +48,10 @@ export const signin = async (req: Request, res: Response) => {
     );
 
     const { passwordHash: _, ...safeUser } = user;
-    return res.json({ accessToken: accessToken, user: safeUser });
+    return res.status(200).json({ accessToken: accessToken, user: safeUser });
   } catch (err) {
     console.error(err);
-    return res.json({
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
@@ -101,17 +101,17 @@ export const signup = async (req: Request, res: Response) => {
       },
     });
 
-    const accessToken = generateAccessToken({ userId: newUser.id });
+    const accessToken = generateAccessToken({ userId: newUser.id, role: newUser.role });
     const refreshToken = generateRefreshToken({ userId: newUser.id });
     res.cookie(
       "refreshToken",
       refreshToken,
       refreshCookieOptions as CookieOptions,
     );
-    return res.json({ accessToken: accessToken, user: newUser });
+    return res.status(201).json({ accessToken: accessToken, user: newUser });
   } catch (err) {
     console.error(err);
-    return res.json({
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
@@ -141,8 +141,8 @@ export const refresh = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Account is disabled" });
     }
 
-    const accessToken = generateAccessToken({ userId: payload.userId });
-    return res.json({ accessToken, user });
+    const accessToken = generateAccessToken({ userId: user.id, role: user.role });
+    return res.status(200).json({ accessToken, user });
   } catch(err) {
     console.error(err);
     return res.status(403).json({ message: "Invalid refresh token" });

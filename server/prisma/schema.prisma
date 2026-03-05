@@ -48,10 +48,13 @@ model Subscription {
   toolName    String
   cost        Decimal            @db.Decimal(10, 2)
   renewalDate DateTime
-  status      SubscriptionStatus
+  status      SubscriptionStatus @default(REQUESTED)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([renewalDate])
 }
 
 model AuditLog {
