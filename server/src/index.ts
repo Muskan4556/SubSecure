@@ -5,6 +5,9 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import prisma from "./lib/prisma";
 import authRoute from "./routes/authRoute";
+import subscriptionRoute from "./routes/subscriptions";
+import auditLogRoute from "./routes/auditLogs";
+import userRoute from "./routes/users";
 
 const app = express();
 
@@ -31,6 +34,9 @@ app.get("/api/health", async (_req, res) => {
 });
 
 app.use("/api/auth", authRoute);
+app.use("/api/subscriptions", subscriptionRoute);
+app.use("/api/audit-logs", auditLogRoute);
+app.use("/api/users", userRoute);
 
 // Start server
 const PORT = Number(process.env.PORT) || 4000;

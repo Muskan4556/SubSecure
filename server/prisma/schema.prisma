@@ -17,6 +17,7 @@ enum Role {
 enum SubscriptionStatus {
   REQUESTED
   ACTIVE
+  CANCEL_SCHEDULED
   CANCELLED
 }
 
@@ -49,19 +50,21 @@ model Subscription {
   cost        Decimal            @db.Decimal(10, 2)
   renewalDate DateTime
   status      SubscriptionStatus @default(REQUESTED)
+  cancelAt    DateTime?          // populated when user schedules cancellation at renewalDate
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([ownerId])
   @@index([renewalDate])
+  @@index([cancelAt])   
 }
 
 model AuditLog {
   id String @id @default(uuid())
 
   actorId String
-  actor   User @relation(fields: [actorId], references: [id])
+  actor   User   @relation(fields: [actorId], references: [id])
 
   entityType AuditEntityType
   entityId   String
