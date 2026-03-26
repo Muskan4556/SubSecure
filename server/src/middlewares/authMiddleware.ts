@@ -23,13 +23,13 @@ export const requireAuth = (
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(" ")[1]!;
 
   try {
     const payload = jwt.verify(
       token,
       process.env.ACCESS_TOKEN_SECRET!,
-    ) as AccessTokenPayload;
+    ) as unknown as AccessTokenPayload;
 
     req.userId = payload.userId;
     req.role = payload.role;

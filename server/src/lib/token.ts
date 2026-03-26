@@ -8,10 +8,10 @@ export type AccessTokenPayload = {
 
 export const generateAccessToken = (payload: AccessTokenPayload) =>
   jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET!, {
-    expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN as jwt.SignOptions["expiresIn"],
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN! as NonNullable<jwt.SignOptions["expiresIn"]>,
   });
 
 export const generateRefreshToken = (payload: { userId: string }) =>
   jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET!, {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN as jwt.SignOptions["expiresIn"],
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN! as NonNullable<jwt.SignOptions["expiresIn"]>,
   });

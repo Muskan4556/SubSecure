@@ -5,7 +5,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import prisma from "./lib/prisma";
 import authRoute from "./routes/authRoute";
-import subscriptionRoute from "./routes/subscriptions";
+import subscriptionRoute from "./routes/subscriptionsRoute";
 import auditLogRoute from "./routes/auditLogs";
 import userRoute from "./routes/users";
 

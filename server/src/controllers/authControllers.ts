@@ -1,5 +1,5 @@
 import { CookieOptions, Request, Response } from "express";
-import { SigninSchema, SignupSchema } from "../validations/auth";
+import { SigninSchema, SignupSchema } from "../validations/authValidation";
 import jwt from "jsonwebtoken";
 import bycrpt from "bcrypt";
 import prisma from "../lib/prisma";
@@ -38,7 +38,10 @@ export const signin = async (req: Request, res: Response) => {
       });
     }
 
-    const accessToken = generateAccessToken({ userId: user.id, role: user.role });
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      role: user.role,
+    });
     const refreshToken = generateRefreshToken({ userId: user.id });
 
     res.cookie(
@@ -101,7 +104,10 @@ export const signup = async (req: Request, res: Response) => {
       },
     });
 
-    const accessToken = generateAccessToken({ userId: newUser.id, role: newUser.role });
+    const accessToken = generateAccessToken({
+      userId: newUser.id,
+      role: newUser.role,
+    });
     const refreshToken = generateRefreshToken({ userId: newUser.id });
     res.cookie(
       "refreshToken",
@@ -130,7 +136,15 @@ export const refresh = async (req: Request, res: Response) => {
 
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
-      select: { id: true, email: true, name: true, role: true, isActive: true, profileImageUrl: true, createdAt: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        profileImageUrl: true,
+        createdAt: true,
+      },
     });
 
     if (!user) {
@@ -141,14 +155,16 @@ export const refresh = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Account is disabled" });
     }
 
-    const accessToken = generateAccessToken({ userId: user.id, role: user.role });
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      role: user.role,
+    });
     return res.status(200).json({ accessToken, user });
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return res.status(403).json({ message: "Invalid refresh token" });
   }
 };
-
 
 export const logout = (_: Request, res: Response) => {
   res.clearCookie("refreshToken", { path: "/api/auth/refresh" });
