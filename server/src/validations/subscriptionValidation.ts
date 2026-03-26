@@ -26,7 +26,7 @@ export const subscriptionIdSchema = z.object({
 export const getSubscriptionsQuerySchema = z.object({
   status: z.nativeEnum(SubscriptionStatus).optional(),
   page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
+  limit: z.coerce.number().int().positive().max(100).default(10),
 });
 
 export const getUpcomingRenewalsQuerySchema = z.object({

@@ -1,16 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { Role } from "@prisma/client";
 import { AccessTokenPayload } from "../lib/token";
-
-declare global {
-  namespace Express {
-    interface Request {
-      userId: string;
-      role: Role;
-    }
-  }
-}
 
 export const requireAuth = (
   req: Request,

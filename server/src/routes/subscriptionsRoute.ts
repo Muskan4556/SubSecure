@@ -30,12 +30,7 @@ router.get(
 );
 
 // Collection
-router.get(
-  "/",
-  requireAuth,
-  requireRole(Role.ADMIN, Role.USER),
-  getSubscriptions,
-);
+router.get("/", requireAuth, getSubscriptions); 
 
 router.post(
   "/",
