@@ -35,8 +35,9 @@ model User {
   isActive        Boolean @default(true)
   profileImageUrl String?
 
-  subscriptions Subscription[]
-  auditLogs     AuditLog[]
+  subscriptions         Subscription[] @relation("OwnedSubscriptions")
+  approvedSubscriptions Subscription[] @relation("ApprovedSubscriptions")
+  auditLogs             AuditLog[]
 
   createdAt DateTime @default(now())
 }
@@ -44,20 +45,24 @@ model User {
 model Subscription {
   id      String @id @default(uuid())
   ownerId String
-  owner   User   @relation(fields: [ownerId], references: [id])
+  owner   User   @relation("OwnedSubscriptions", fields: [ownerId], references: [id])
+
+  approvedById String?
+  approvedBy   User?     @relation("ApprovedSubscriptions", fields: [approvedById], references: [id])
+  approvedAt   DateTime?
 
   toolName    String
   cost        Decimal            @db.Decimal(10, 2)
   renewalDate DateTime
   status      SubscriptionStatus @default(REQUESTED)
-  cancelAt    DateTime?          // populated when user schedules cancellation at renewalDate
+  cancelAt    DateTime? // populated when user schedules cancellation at renewalDate
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([ownerId])
   @@index([renewalDate])
-  @@index([cancelAt])   
+  @@index([cancelAt])
 }
 
 model AuditLog {
@@ -70,8 +75,8 @@ model AuditLog {
   entityId   String
 
   action String
-  before Json
-  after  Json
+  before Json?
+  after  Json?
 
   createdAt DateTime @default(now())
 }
