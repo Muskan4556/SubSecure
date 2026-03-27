@@ -22,7 +22,7 @@ export const getSubscriptions = async (req: Request, res: Response) => {
     });
   }
   const { status, page, limit } = parsedQuery.data;
-  const isAdmin = req.role === Role.ADMIN;
+  const isAdmin = req.userRole === Role.ADMIN;
 
   try {
     const where = {
@@ -74,6 +74,27 @@ export const createSubscription = async (req: Request, res: Response) => {
   const { toolName, cost, renewalDate } = parsedData.data;
 
   try {
+    // duplicate check
+    const existing = await prisma.subscription.findFirst({
+      where: {
+        ownerId: req.userId,
+        toolName: {
+          equals: toolName,
+          mode: "insensitive",
+        },
+        status: {
+          notIn: [SubscriptionStatus.CANCELLED],
+        },
+      },
+    });
+
+    if (existing) {
+      return res.status(409).json({
+        message: `You already have an active or pending subscription for ${toolName}`,
+        existingSubscriptionId: existing.id,
+      });
+    }
+
     const newSubscription = await prisma.$transaction(async (tx) => {
       const subscription = await tx.subscription.create({
         data: {
@@ -104,9 +125,7 @@ export const createSubscription = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      message: "Internal Server Error",
-    });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -120,7 +139,7 @@ export const getSubscriptionById = async (req: Request, res: Response) => {
   }
 
   const { id } = parsedId.data;
-  const isAdmin = req.role === Role.ADMIN;
+  const isAdmin = req.userRole === Role.ADMIN;
 
   try {
     const subscription = await prisma.subscription.findUnique({
@@ -145,33 +164,41 @@ export const getSubscriptionById = async (req: Request, res: Response) => {
 
 export const approveSubscription = async (req: Request, res: Response) => {
   const parsedId = subscriptionIdSchema.safeParse(req.params);
-
   if (!parsedId.success) {
     return res.status(400).json({
       message: "Invalid subscription ID",
       errors: parsedId.error.issues,
     });
   }
+
   const { id } = parsedId.data;
 
   try {
     const subscription = await prisma.subscription.findUnique({
-      where: {
-        id: id as string,
-      },
+      where: { id },
     });
 
     if (!subscription) {
-      return res.status(404).json({
-        message: "Subscription not found",
+      return res.status(404).json({ message: "Subscription not found" });
+    }
+
+    // separation of duties — admin cannot approve their own request
+    if (subscription.ownerId === req.userId) {
+      return res.status(403).json({
+        message: "You cannot approve your own subscription",
+      });
+    }
+
+    // state transition guard
+    if (subscription.status !== SubscriptionStatus.REQUESTED) {
+      return res.status(400).json({
+        message: `Cannot approve a subscription with status: ${subscription.status}`,
       });
     }
 
     const updatedSubscription = await prisma.$transaction(async (tx) => {
-      const updatedSubscription = await tx.subscription.update({
-        where: {
-          id: id as string,
-        },
+      const updated = await tx.subscription.update({
+        where: { id },
         data: {
           status: SubscriptionStatus.ACTIVE,
           approvedById: req.userId,
@@ -183,14 +210,14 @@ export const approveSubscription = async (req: Request, res: Response) => {
         data: {
           actorId: req.userId,
           entityType: AuditEntityType.SUBSCRIPTION,
-          entityId: updatedSubscription.id,
+          entityId: updated.id,
           action: "SUBSCRIPTION_APPROVED",
-          before: { status: subscription.status },
-          after: updatedSubscription,
+          before: subscription,
+          after: updated,
         },
       });
 
-      return updatedSubscription;
+      return updated;
     });
 
     return res.status(200).json({
@@ -199,9 +226,7 @@ export const approveSubscription = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      message: "Internal Server Error",
-    });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -223,7 +248,8 @@ export const updateSubscription = async (req: Request, res: Response) => {
   }
 
   const { id } = parsedId.data;
-  const isAdmin = req.role === Role.ADMIN;
+  const { toolName, cost, renewalDate } = parsedBody.data;
+  const isAdmin = req.userRole === Role.ADMIN;
 
   try {
     const subscription = await prisma.subscription.findUnique({
@@ -247,7 +273,11 @@ export const updateSubscription = async (req: Request, res: Response) => {
     const updated = await prisma.$transaction(async (tx) => {
       const updatedSubscription = await tx.subscription.update({
         where: { id },
-        data: parsedBody.data as Prisma.SubscriptionUpdateInput,
+        data: {
+          ...(toolName !== undefined && { toolName }),
+          ...(cost !== undefined && { cost }),
+          ...(renewalDate !== undefined && { renewalDate }),
+        },
       });
 
       await tx.auditLog.create({
@@ -360,7 +390,7 @@ export const getPendingApprovals = async (req: Request, res: Response) => {
 };
 
 export const getSubscriptionStats = async (req: Request, res: Response) => {
-  const isAdmin = req.role === Role.ADMIN;
+  const isAdmin = req.userRole === Role.ADMIN;
 
   try {
     const where = {
@@ -417,7 +447,7 @@ export const cancelSubscription = async (req: Request, res: Response) => {
   }
 
   const { id } = parsedId.data;
-  const isAdmin = req.role === Role.ADMIN;
+  const isAdmin = req.userRole === Role.ADMIN;
 
   try {
     const subscription = await prisma.subscription.findUnique({
