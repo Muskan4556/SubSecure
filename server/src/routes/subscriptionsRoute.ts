@@ -35,7 +35,6 @@ router.get("/", requireAuth, getSubscriptions);
 router.post(
   "/",
   requireAuth,
-  requireRole(Role.USER),
   createSubscription,
 );
 

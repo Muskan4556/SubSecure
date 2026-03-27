@@ -22,7 +22,7 @@ export const requireAuth = (
     ) as unknown as AccessTokenPayload;
 
     req.userId = payload.userId;
-    req.role = payload.role;
+    req.userRole = payload.role;
     next();
   } catch (err) {
     console.error(err);

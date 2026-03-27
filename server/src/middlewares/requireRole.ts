@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 
 export const requireRole = (...allowedRoles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!allowedRoles.includes(req.role)) {
+    if (!allowedRoles.includes(req.userRole)) {
       return res.status(403).json({ message: "Forbidden" });
     }
     next();
