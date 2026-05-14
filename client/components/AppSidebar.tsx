@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, LogOut } from "lucide-react";
+import { Shield, LogOut, ChevronRight } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 import { useLogout } from "@/apis/auth/auth-api";
 import { NAV_GROUPS } from "@/lib/data/sidebar";
@@ -33,7 +33,7 @@ function UserAvatar({ name }: { name: string }) {
     .toUpperCase();
 
   return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white select-none shrink-0">
+    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-violet-400 to-blue-500 text-[10px] font-semibold text-white select-none shrink-0">
       {initials}
     </div>
   );
@@ -50,20 +50,14 @@ function AppSidebarInner() {
       <SidebarHeader className="border-b border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent"
-            >
+            <SidebarMenuButton asChild size="lg">
               <Link href="/dashboard">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary shrink-0">
-                  <ShieldCheck className="size-4 text-white" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/90 shrink-0">
+                  <Shield className="size-3.5 text-white" />
                 </div>
                 <div className="leading-tight">
-                  <span className="text-sm font-semibold tracking-tight">
-                    SubSecure
-                  </span>
-                  <p className="text-xs text-muted-foreground">
+                  <span className="text-[13px] font-semibold tracking-tight">SubSecure</span>
+                  <p className="text-[10px] font-mono text-sidebar-foreground/40">
                     Subscription Management
                   </p>
                 </div>
@@ -77,7 +71,9 @@ function AppSidebarInner() {
       <SidebarContent>
         {NAV_GROUPS.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-[9px] font-mono uppercase tracking-[0.15em] text-sidebar-foreground/30">
+              {group.label}
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map(({ label, href, icon: Icon }) => {
@@ -88,14 +84,10 @@ function AppSidebarInner() {
 
                   return (
                     <SidebarMenuItem key={href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={label}
-                      >
+                      <SidebarMenuButton asChild isActive={isActive} tooltip={label}>
                         <Link href={href}>
-                          <Icon />
-                          <span>{label}</span>
+                          <Icon className="shrink-0" />
+                          <span className="text-[12px]">{label}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -112,23 +104,20 @@ function AppSidebarInner() {
         <SidebarMenu>
           {user && (
             <SidebarMenuItem>
-              <SidebarMenuButton
-                size="lg"
-                className="cursor-default hover:bg-transparent"
-              >
+              <SidebarMenuButton size="lg" className="cursor-default hover:bg-transparent">
                 <UserAvatar name={user.name} />
                 <div className="flex-1 leading-tight overflow-hidden">
                   <div className="flex items-center gap-1.5">
-                    <span className="truncate text-sm font-medium">
+                    <span className="truncate text-[12px] font-medium text-sidebar-foreground/80">
                       {user.name}
                     </span>
                     {user.role === "ADMIN" && (
-                      <span className="shrink-0 rounded-full bg-brand-secondary/10 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-brand-secondary">
+                      <span className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-px text-[8px] font-mono uppercase tracking-wide text-emerald-400">
                         Admin
                       </span>
                     )}
                   </div>
-                  <span className="truncate text-xs text-muted-foreground">
+                  <span className="truncate text-[10px] font-mono text-sidebar-foreground/30">
                     {user.email}
                   </span>
                 </div>
@@ -143,10 +132,10 @@ function AppSidebarInner() {
               tooltip="Sign out"
               disabled={isPending}
               onClick={() => logout()}
-              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+              className="text-sidebar-foreground/40 hover:text-red-400 hover:bg-red-500/8 cursor-pointer transition-colors"
             >
-              <LogOut />
-              <span>{isPending ? "Signing out…" : "Sign out"}</span>
+              <LogOut className="shrink-0" />
+              <span className="text-[12px]">{isPending ? "Signing out…" : "Sign out"}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -167,10 +156,12 @@ export default function AppSidebar({
       <AppSidebarInner />
 
       <SidebarInset>
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4 py-8">
-          <SidebarTrigger className="-ml-1" />
-          <div className="h-4 w-px bg-border" />
-          <p className="text-sm text-muted-foreground">Dashboard</p>
+        {/* Top bar */}
+        <header className="flex h-12 shrink-0 items-center gap-3 border-b border-border px-4">
+          <SidebarTrigger className="-ml-1 text-sidebar-foreground/40 hover:text-sidebar-foreground" />
+          <div className="h-3.5 w-px bg-border" />
+          <ChevronRight className="w-3 h-3 text-white/20" />
+          <p className="text-[11px] font-mono text-white/30">Dashboard</p>
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-6">{children}</div>

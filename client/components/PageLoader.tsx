@@ -1,46 +1,63 @@
-import { ShieldCheck } from "lucide-react";
+import { Shield } from "lucide-react";
 
 export default function PageLoader() {
   return (
     <div
       role="status"
       aria-label="Loading"
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-secondary"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-[#06090f]"
     >
-      {/* Logo mark */}
+      {/* ledger lines — same as landing hero */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)",
+          backgroundSize: "100% 80px",
+        }}
+      />
+
+      {/* emerald glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
+
+      {/* logo mark */}
       <div className="relative flex items-center justify-center">
-       
-        <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-primary shadow-lg">
-          <ShieldCheck className="size-6 text-white" />
+        {/* outer spinning ring */}
+        <svg
+          className="absolute w-16 h-16 animate-spin"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 64 64"
+          aria-hidden="true"
+        >
+          <circle
+            cx="32" cy="32" r="28"
+            stroke="rgba(16,185,129,0.12)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M32 4 a28 28 0 0 1 28 28"
+            stroke="rgba(16,185,129,0.6)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </svg>
+
+        {/* icon */}
+        <div className="w-10 h-10 rounded-xl bg-emerald-500/90 flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.25)]">
+          <Shield className="w-5 h-5 text-white" />
         </div>
       </div>
 
-      {/* Spinner ring */}
-      <svg
-        className="size-6 animate-spin text-brand-secondary"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <circle
-          className="opacity-20"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
-        <path
-          className="opacity-80"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-        />
-      </svg>
-
-      <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase select-none">
-        SubSecure
-      </p>
+      {/* label */}
+      <div className="flex flex-col items-center gap-1.5 select-none">
+        <p className="text-[11px] font-mono text-white/50 tracking-[0.2em] uppercase">
+          SubSecure
+        </p>
+        <p className="text-[9px] font-mono text-white/20 tracking-wider">
+          Verifying session…
+        </p>
+      </div>
     </div>
   );
 }

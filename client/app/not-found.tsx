@@ -2,100 +2,134 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ShieldCheck, ArrowLeft, Home } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { fadeUp, stagger } from "@/lib/animations";
+import { Shield, ArrowLeft, ArrowUpRight } from "lucide-react";
+
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const variants = {
+  container: {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
+  },
+  item: {
+    hidden: { opacity: 0, y: 18 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.55, ease } },
+  },
+};
 
 export default function NotFound() {
+  const ts = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary px-6 relative overflow-hidden">
-      {/* Grid background */}
+    <div className="min-h-screen bg-[#06090f] relative overflow-hidden flex flex-col">
+      {/* ledger lines */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.025]"
+        className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            "linear-gradient(var(--brand-primary) 1px, transparent 1px), linear-gradient(90deg, var(--brand-primary) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
+            "linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px)",
+          backgroundSize: "100% 80px",
+          backgroundPositionY: "14px",
         }}
       />
-      {/* Glow orbs */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[700px] rounded-full bg-brand-secondary opacity-[0.06] blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 right-0 h-64 w-64 rounded-full bg-brand-tertiary opacity-[0.05] blur-3xl" />
 
-      <motion.div
-        className="relative z-10 flex flex-col items-center text-center max-w-md"
-        initial="hidden"
-        animate="show"
-        variants={stagger(0.1)}
+      {/* asymmetric vertical accent */}
+      <div className="hidden lg:block absolute top-0 bottom-0 left-[58%] w-px bg-white/4 pointer-events-none" />
+
+      {/* ambient red glow */}
+      <div className="pointer-events-none absolute top-[20%] left-[25%] w-[700px] h-[400px] rounded-full bg-red-500/3 blur-3xl" />
+
+      {/* ghost 404 background */}
+      <div
+        className="pointer-events-none select-none absolute right-[-5%] top-1/2 -translate-y-1/2 text-[clamp(14rem,32vw,24rem)] font-black leading-none tracking-[-0.05em] text-white/2.5 hidden lg:block"
+        aria-hidden
       >
-        {/* Logo */}
-        <motion.div variants={fadeUp}>
-          <Link href="/" className="inline-flex items-center gap-2.5 mb-12">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary">
-              <ShieldCheck className="size-4 text-brand-primary-fg" />
-            </div>
-            <span className="text-[15px] font-semibold tracking-tight text-brand-primary">
-              SubSecure
+        404
+      </div>
+
+      {/* ── Top bar ── */}
+      <header className="relative z-10 flex items-center justify-between px-6 sm:px-10 h-14 border-b border-white/6">
+        <Link href="/" className="inline-flex items-center gap-2">
+          <div className="w-6 h-6 rounded-md bg-emerald-500/90 flex items-center justify-center">
+            <Shield className="w-3 h-3 text-white" />
+          </div>
+          <span className="text-[13px] font-semibold tracking-tight text-white/70">
+            SubSecure
+          </span>
+        </Link>
+        <span className="text-[9px] font-mono text-white/20 tracking-wider">
+          subsecure.io / error
+        </span>
+      </header>
+
+      {/* ── Main content ── */}
+      <div className="relative z-10 flex-1 flex items-center">
+        <motion.div
+          className="w-full max-w-7xl mx-auto px-6 sm:px-10 py-16"
+          initial="hidden"
+          animate="show"
+          variants={variants.container}
+        >
+          {/* incident badge */}
+          <motion.div
+            variants={variants.item}
+            className="flex items-center gap-2.5 mb-10"
+          >
+            <span className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 text-red-400/80 text-[9px] font-mono uppercase tracking-[0.18em] px-3 py-1.5 rounded-full">
+              System Notice — Route Not Found
             </span>
-          </Link>
-        </motion.div>
+          </motion.div>
 
-        {/* 404 number */}
-        <motion.div variants={fadeUp} className="relative mb-6 select-none">
-          <span className="text-[10rem] font-black leading-none tracking-tighter text-border">
-            404
-          </span>
-          <span className="absolute inset-0 flex items-center justify-center text-[10rem] font-black leading-none tracking-tighter text-brand-secondary mask-[linear-gradient(to_bottom,black_50%,transparent_100%)]">
-            404
-          </span>
-        </motion.div>
-
-        {/* Text */}
-        <motion.h1
-          variants={fadeUp}
-          className="text-2xl font-bold tracking-tight text-brand-primary mb-3"
-        >
-          Page not found
-        </motion.h1>
-        <motion.p
-          variants={fadeUp}
-          className="text-sm text-muted-foreground leading-relaxed mb-8"
-        >
-          The page you&apos;re looking for doesn&apos;t exist or has been moved.
-          Check the URL or head back to the dashboard.
-        </motion.p>
-
-        {/* Actions */}
-        <motion.div variants={fadeUp} className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            className="gap-2 hover:text-brand-primary-fg cursor-pointer"
-            onClick={() => window.history.back()}
+          {/* 404 — visible on mobile only */}
+          <motion.div
+            variants={variants.item}
+            className="text-[5rem] font-black leading-none tracking-[-0.04em] text-white/5 select-none mb-3 lg:hidden"
+            aria-hidden
           >
-            <ArrowLeft className="size-4" />
-            Go back
-          </Button>
-          <Button
-            className="gap-2 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-fg border-0"
-            asChild
+            404
+          </motion.div>
+
+          {/* headline */}
+          <motion.h1
+            variants={variants.item}
+            className="text-[clamp(2.8rem,6vw,5rem)] font-bold leading-[1.04] tracking-[-0.035em] text-white/90 mb-5 max-w-2xl"
           >
-            <Link href="/">
-              <Home className="size-4" />
-              Home
+            Page not
+            <br />
+            <span className="text-white/25">on record.</span>
+          </motion.h1>
+
+          <motion.p
+            variants={variants.item}
+            className="text-[15px] text-white/35 leading-relaxed max-w-md mb-10"
+          >
+            The path you requested isn&apos;t registered in this system. It may
+            have been moved, deleted, or never existed.
+          </motion.p>
+
+          {/* actions */}
+          <motion.div
+            variants={variants.item}
+            className="flex flex-wrap items-center gap-3 mb-14"
+          >
+            <button
+              onClick={() => window.history.back()}
+              className="inline-flex items-center gap-2 text-[13px] font-medium text-white/50 hover:text-white/85 border border-white/10 hover:border-white/25 px-5 py-2.5 rounded-xl transition-all cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Go back
+            </button>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 text-[13px] font-semibold text-white border border-white/15 hover:border-white/35 hover:bg-white/4 px-5 py-2.5 rounded-xl transition-all"
+            >
+              Dashboard
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
-          </Button>
+           
+          </motion.div>
         </motion.div>
-
-        <motion.p variants={fadeUp} className="mt-10 text-xs text-muted-foreground">
-          Need help?{" "}
-          <Link
-            href="/contact"
-            className="text-brand-secondary hover:underline underline-offset-4 transition-colors"
-          >
-            Contact support
-          </Link>
-        </motion.p>
-      </motion.div>
+      </div>
     </div>
   );
 }
