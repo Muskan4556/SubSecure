@@ -7,27 +7,19 @@ import {
   createSubscription,
   getSubscriptionById,
   updateSubscription,
-  approveSubscription,
   cancelSubscription,
   scheduleCancel,
   undoScheduleCancel,
   deleteSubscription,
   getSubscriptionStats,
   getUpcomingRenewals,
-  getPendingApprovals,
 } from "../controllers/subscriptions";
 
 const router = Router();
 
-// Static path
+// Static paths
 router.get("/stats", requireAuth, getSubscriptionStats);
 router.get("/renewals", requireAuth, getUpcomingRenewals);
-router.get(
-  "/approvals",
-  requireAuth,
-  requireRole(Role.ADMIN),
-  getPendingApprovals,
-);
 
 // Collection
 router.get("/", requireAuth, getSubscriptions); 
@@ -42,15 +34,7 @@ router.post(
 router.get("/:id", requireAuth, getSubscriptionById);
 router.patch("/:id", requireAuth, updateSubscription);
 
-// admin only: REQUESTED → ACTIVE
-router.put(
-  "/:id/approve",
-  requireAuth,
-  requireRole(Role.ADMIN),
-  approveSubscription,
-);
-
-// user:  REQUESTED → CANCELLED  (withdraw own request)
+// user: ACTIVE / CANCEL_SCHEDULED → CANCELLED
 // admin: any status → CANCELLED (force cancel)
 router.put("/:id/cancel", requireAuth, cancelSubscription);
 

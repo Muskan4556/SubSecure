@@ -90,7 +90,7 @@ export const createSubscription = async (req: Request, res: Response) => {
 
     if (existing) {
       return res.status(409).json({
-        message: `You already have an active or pending subscription for ${toolName}`,
+        message: `You already have an active subscription for ${toolName}`,
         existingSubscriptionId: existing.id,
       });
     }
@@ -162,73 +162,6 @@ export const getSubscriptionById = async (req: Request, res: Response) => {
   }
 };
 
-export const approveSubscription = async (req: Request, res: Response) => {
-  const parsedId = subscriptionIdSchema.safeParse(req.params);
-  if (!parsedId.success) {
-    return res.status(400).json({
-      message: "Invalid subscription ID",
-      errors: parsedId.error.issues,
-    });
-  }
-
-  const { id } = parsedId.data;
-
-  try {
-    const subscription = await prisma.subscription.findUnique({
-      where: { id },
-    });
-
-    if (!subscription) {
-      return res.status(404).json({ message: "Subscription not found" });
-    }
-
-    // separation of duties — admin cannot approve their own request
-    if (subscription.ownerId === req.userId) {
-      return res.status(403).json({
-        message: "You cannot approve your own subscription",
-      });
-    }
-
-    // state transition guard
-    if (subscription.status !== SubscriptionStatus.REQUESTED) {
-      return res.status(400).json({
-        message: `Cannot approve a subscription with status: ${subscription.status}`,
-      });
-    }
-
-    const updatedSubscription = await prisma.$transaction(async (tx) => {
-      const updated = await tx.subscription.update({
-        where: { id },
-        data: {
-          status: SubscriptionStatus.ACTIVE,
-          approvedById: req.userId,
-          approvedAt: new Date(),
-        },
-      });
-
-      await tx.auditLog.create({
-        data: {
-          actorId: req.userId,
-          entityType: AuditEntityType.SUBSCRIPTION,
-          entityId: updated.id,
-          action: "SUBSCRIPTION_APPROVED",
-          before: subscription,
-          after: updated,
-        },
-      });
-
-      return updated;
-    });
-
-    return res.status(200).json({
-      message: "Subscription approved successfully",
-      data: updatedSubscription,
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
 
 export const updateSubscription = async (req: Request, res: Response) => {
   const parsedId = subscriptionIdSchema.safeParse({ id: req.params.id });
@@ -264,9 +197,16 @@ export const updateSubscription = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    if (!isAdmin && subscription.status !== SubscriptionStatus.REQUESTED) {
+    if (subscription.status === SubscriptionStatus.CANCELLED) {
       return res.status(400).json({
-        message: `Cannot update a subscription with status: ${subscription.status}`,
+        message: "Cannot update a cancelled subscription",
+      });
+    }
+
+    if (!isAdmin && subscription.status !== SubscriptionStatus.ACTIVE) {
+      return res.status(400).json({
+        message:
+          "Cannot update a subscription that is scheduled for cancellation. Undo the cancellation first.",
       });
     }
 
@@ -350,44 +290,6 @@ export const deleteSubscription = async (req: Request, res: Response) => {
   }
 };
 
-export const getPendingApprovals = async (req: Request, res: Response) => {
-  const parsedQuery = getSubscriptionsQuerySchema.safeParse(req.query);
-  if (!parsedQuery.success) {
-    return res.status(400).json({
-      message: "Invalid query parameters",
-      errors: parsedQuery.error.issues,
-    });
-  }
-
-  const { page, limit } = parsedQuery.data;
-
-  try {
-    const where = { status: SubscriptionStatus.REQUESTED };
-
-    const [subscriptions, total] = await Promise.all([
-      prisma.subscription.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { createdAt: "asc" },
-        include: {
-          owner: {
-            select: { id: true, name: true, email: true },
-          },
-        },
-      }),
-      prisma.subscription.count({ where }),
-    ]);
-
-    return res.status(200).json({
-      data: subscriptions,
-      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
 
 export const getSubscriptionStats = async (req: Request, res: Response) => {
   const isAdmin = req.userRole === Role.ADMIN;
@@ -397,35 +299,26 @@ export const getSubscriptionStats = async (req: Request, res: Response) => {
       ...(!isAdmin && { ownerId: req.userId }),
     };
 
-    const [
-      totalActive,
-      totalRequested,
-      totalCancelled,
-      totalScheduled,
-      activeCost,
-    ] = await Promise.all([
-      prisma.subscription.count({
-        where: { ...where, status: SubscriptionStatus.ACTIVE },
-      }),
-      prisma.subscription.count({
-        where: { ...where, status: SubscriptionStatus.REQUESTED },
-      }),
-      prisma.subscription.count({
-        where: { ...where, status: SubscriptionStatus.CANCELLED },
-      }),
-      prisma.subscription.count({
-        where: { ...where, status: SubscriptionStatus.CANCEL_SCHEDULED },
-      }),
-      prisma.subscription.aggregate({
-        where: { ...where, status: SubscriptionStatus.ACTIVE },
-        _sum: { cost: true },
-      }),
-    ]);
+    const [totalActive, totalCancelled, totalScheduled, activeCost] =
+      await Promise.all([
+        prisma.subscription.count({
+          where: { ...where, status: SubscriptionStatus.ACTIVE },
+        }),
+        prisma.subscription.count({
+          where: { ...where, status: SubscriptionStatus.CANCELLED },
+        }),
+        prisma.subscription.count({
+          where: { ...where, status: SubscriptionStatus.CANCEL_SCHEDULED },
+        }),
+        prisma.subscription.aggregate({
+          where: { ...where, status: SubscriptionStatus.ACTIVE },
+          _sum: { cost: true },
+        }),
+      ]);
 
     return res.status(200).json({
       data: {
         totalActive,
-        totalRequested,
         totalCancelled,
         totalScheduled,
         totalMonthlyCost: activeCost._sum.cost ?? 0,
@@ -463,15 +356,6 @@ export const cancelSubscription = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    // user can only withdraw REQUESTED subscriptions
-    // admin can cancel any status
-    if (!isAdmin && subscription.status !== SubscriptionStatus.REQUESTED) {
-      return res.status(400).json({
-        message:
-          "You can only withdraw a subscription that is still pending approval",
-      });
-    }
-
     // nothing to do if already cancelled
     if (subscription.status === SubscriptionStatus.CANCELLED) {
       return res.status(400).json({
@@ -493,10 +377,9 @@ export const cancelSubscription = async (req: Request, res: Response) => {
           actorId: req.userId,
           entityType: AuditEntityType.SUBSCRIPTION,
           entityId: id,
-          // differentiate who performed the action in the audit trail
           action: isAdmin
             ? "SUBSCRIPTION_FORCE_CANCELLED"
-            : "SUBSCRIPTION_WITHDRAWN",
+            : "SUBSCRIPTION_CANCELLED",
           before: subscription,
           after: updatedSubscription,
         },

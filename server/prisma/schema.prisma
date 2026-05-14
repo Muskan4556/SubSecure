@@ -15,7 +15,6 @@ enum Role {
 }
 
 enum SubscriptionStatus {
-  REQUESTED
   ACTIVE
   CANCEL_SCHEDULED
   CANCELLED
@@ -35,9 +34,8 @@ model User {
   isActive        Boolean @default(true)
   profileImageUrl String?
 
-  subscriptions         Subscription[] @relation("OwnedSubscriptions")
-  approvedSubscriptions Subscription[] @relation("ApprovedSubscriptions")
-  auditLogs             AuditLog[]
+  subscriptions Subscription[] @relation("OwnedSubscriptions")
+  auditLogs     AuditLog[]
 
   createdAt DateTime @default(now())
 }
@@ -47,14 +45,10 @@ model Subscription {
   ownerId String
   owner   User   @relation("OwnedSubscriptions", fields: [ownerId], references: [id])
 
-  approvedById String?
-  approvedBy   User?     @relation("ApprovedSubscriptions", fields: [approvedById], references: [id])
-  approvedAt   DateTime?
-
   toolName    String
   cost        Decimal            @db.Decimal(10, 2)
   renewalDate DateTime
-  status      SubscriptionStatus @default(REQUESTED)
+  status      SubscriptionStatus @default(ACTIVE)
   cancelAt    DateTime? // populated when user schedules cancellation at renewalDate
 
   createdAt DateTime @default(now())
