@@ -1,60 +1,36 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/authMiddleware";
-import { Role } from "@prisma/client";
-import { requireRole } from "../middlewares/requireRole";
+import { ownershipCheck } from "../middlewares/ownershipCheck";
 import {
   getSubscriptions,
   createSubscription,
   getSubscriptionById,
   updateSubscription,
   cancelSubscription,
-  scheduleCancel,
-  undoScheduleCancel,
-  deleteSubscription,
   getSubscriptionStats,
   getUpcomingRenewals,
+  getBillingHistory,
+  getAllMyBillingHistory,
 } from "../controllers/subscriptions";
 
 const router = Router();
 
-// Static paths
 router.get("/stats", requireAuth, getSubscriptionStats);
 router.get("/renewals", requireAuth, getUpcomingRenewals);
+router.get("/billing-history", requireAuth, getAllMyBillingHistory);
 
-// Collection
-router.get("/", requireAuth, getSubscriptions); 
+router.post("/", requireAuth, createSubscription);
+router.get("/", requireAuth, getSubscriptions);
 
-router.post(
-  "/",
+router.get("/:id", requireAuth, ownershipCheck, getSubscriptionById);
+router.patch("/:id", requireAuth, ownershipCheck, updateSubscription);
+router.put("/:id/cancel", requireAuth, ownershipCheck, cancelSubscription);
+
+router.get(
+  "/:id/billing-history",
   requireAuth,
-  createSubscription,
+  ownershipCheck,
+  getBillingHistory,
 );
-
-// Item
-router.get("/:id", requireAuth, getSubscriptionById);
-router.patch("/:id", requireAuth, updateSubscription);
-
-// user: ACTIVE / CANCEL_SCHEDULED → CANCELLED
-// admin: any status → CANCELLED (force cancel)
-router.put("/:id/cancel", requireAuth, cancelSubscription);
-
-// user only: ACTIVE → CANCEL_SCHEDULED  (sets cancelAt = renewalDate)
-router.put(
-  "/:id/schedule-cancel",
-  requireAuth,
-  requireRole(Role.USER),
-  scheduleCancel,
-);
-
-// user only: CANCEL_SCHEDULED → ACTIVE  (undo before renewalDate is reached)
-router.put(
-  "/:id/undo-cancel",
-  requireAuth,
-  requireRole(Role.USER),
-  undoScheduleCancel,
-);
-
-// admin only: hard delete
-router.delete("/:id", requireAuth, requireRole(Role.ADMIN), deleteSubscription);
 
 export default router;
