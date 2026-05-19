@@ -11,23 +11,22 @@ export const updateMe = async (req: Request, res: Response) => {
     });
   }
 
-  const { name, profileImageUrl } = parsed.data;
+  const { name } = parsed.data;
 
   try {
     const updated = await prisma.user.update({
       where: { id: req.userId },
       data: {
         ...(name !== undefined && { name }),
-        ...(profileImageUrl !== undefined && { profileImageUrl }),
       },
       select: {
         id: true,
         email: true,
         name: true,
         role: true,
-        isActive: true,
-        profileImageUrl: true,
+        status: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 

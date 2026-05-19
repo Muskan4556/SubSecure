@@ -10,9 +10,9 @@ export const getMe = async (req: Request, res: Response) => {
         email: true,
         name: true,
         role: true,
-        isActive: true,
-        profileImageUrl: true,
+        status: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
