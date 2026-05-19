@@ -1,32 +1,39 @@
 import { z } from "zod";
-import { SubscriptionStatus } from "@prisma/client";
+import { BillingCycle, SubscriptionStatus } from "@prisma/client";
 
 export const createSubscriptionSchema = z.object({
-  toolName: z.string().min(1, "Tool name is required").max(100),
-  cost: z.coerce.number().positive("Cost must be a positive number"),
-  renewalDate: z.coerce
+  name: z.string().trim().min(1, "Name is required").max(100),
+  category: z.string().trim().max(50).optional(),
+  amount: z.coerce.number().positive("Amount must be a positive number"),
+  billingCycle: z.nativeEnum(BillingCycle, {
+    message: "billingCycle must be MONTHLY or YEARLY",
+  }),
+  startDate: z.coerce
     .date()
-    .refine((d) => d > new Date(), "Renewal date must be in the future"),
+    .refine((d) => d <= new Date(), "Start date cannot be in the future"),
 });
 
 export const updateSubscriptionSchema = z
   .object({
-    toolName: z.string().min(1, "Tool name is required").max(100).optional(),
-    cost: z.coerce.number().positive("Cost must be a positive number").optional(),
-    renewalDate: z.coerce.date().refine((d) => d > new Date(), "Renewal date must be in the future").optional(),
+    name: z.string().trim().min(1).max(100).optional(),
+    category: z.string().trim().max(50).optional(),
+    amount: z.coerce
+      .number()
+      .positive("Amount must be a positive number")
+      .optional(),
+    billingCycle: z.nativeEnum(BillingCycle).optional(),
+    renewalDate: z.coerce.date().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided",
   });
 
 export const subscriptionIdSchema = z.object({
-  id: z.string().uuid("Invalid subscription ID").trim(),
+  id: z.string().cuid("Invalid subscription ID").trim(),
 });
 
 export const getSubscriptionsQuerySchema = z.object({
   status: z.nativeEnum(SubscriptionStatus).optional(),
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(10),
 });
 
 export const getUpcomingRenewalsQuerySchema = z.object({

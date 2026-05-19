@@ -4,7 +4,7 @@ import {
   updateSubscriptionSchema,
 } from "../../validations/subscriptionValidation";
 import prisma from "../../lib/prisma";
-import { AuditEntityType, Role, SubscriptionStatus } from "@prisma/client";
+import { SubscriptionStatus } from "@prisma/client";
 
 export const updateSubscription = async (req: Request, res: Response) => {
   const parsedId = subscriptionIdSchema.safeParse({ id: req.params.id });
@@ -24,8 +24,7 @@ export const updateSubscription = async (req: Request, res: Response) => {
   }
 
   const { id } = parsedId.data;
-  const { toolName, cost, renewalDate } = parsedBody.data;
-  const isAdmin = req.userRole === Role.ADMIN;
+  const { name, category, amount, billingCycle, renewalDate } = parsedBody.data;
 
   try {
     const subscription = await prisma.subscription.findUnique({ where: { id } });
@@ -34,20 +33,9 @@ export const updateSubscription = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Subscription not found" });
     }
 
-    if (!isAdmin && subscription.ownerId !== req.userId) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     if (subscription.status === SubscriptionStatus.CANCELLED) {
       return res.status(400).json({
         message: "Cannot update a cancelled subscription",
-      });
-    }
-
-    if (!isAdmin && subscription.status !== SubscriptionStatus.ACTIVE) {
-      return res.status(400).json({
-        message:
-          "Cannot update a subscription that is scheduled for cancellation. Undo the cancellation first.",
       });
     }
 
@@ -55,20 +43,21 @@ export const updateSubscription = async (req: Request, res: Response) => {
       const updatedSubscription = await tx.subscription.update({
         where: { id },
         data: {
-          ...(toolName !== undefined && { toolName }),
-          ...(cost !== undefined && { cost }),
+          ...(name !== undefined && { name }),
+          ...(category !== undefined && { category }),
+          ...(amount !== undefined && { amount }),
+          ...(billingCycle !== undefined && { billingCycle }),
           ...(renewalDate !== undefined && { renewalDate }),
         },
       });
 
       await tx.auditLog.create({
         data: {
-          actorId: req.userId,
-          entityType: AuditEntityType.SUBSCRIPTION,
+          userId: req.userId,
+          action: "SUB_UPDATED",
+          entityType: "SUBSCRIPTION",
           entityId: id,
-          action: "SUBSCRIPTION_UPDATED",
-          before: subscription,
-          after: updatedSubscription,
+          ipAddress: req.ip ?? null,
         },
       });
 
