@@ -9,68 +9,105 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Enums 
+
 enum Role {
   USER
   ADMIN
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
 enum SubscriptionStatus {
   ACTIVE
-  CANCEL_SCHEDULED
   CANCELLED
 }
 
-enum AuditEntityType {
-  USER
-  SUBSCRIPTION
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+enum BillingStatus {
+  PAID
+  PENDING
+  FAILED
 }
 
 model User {
-  id              String  @id @default(uuid())
-  email           String  @unique
-  name            String
-  passwordHash    String
-  role            Role    @default(USER)
-  isActive        Boolean @default(true)
-  profileImageUrl String?
+  id       String     @id @default(cuid())
+  name     String
+  email    String     @unique
+  password String
+  role     Role       @default(USER)
+  status   UserStatus @default(ACTIVE)
 
-  subscriptions Subscription[] @relation("OwnedSubscriptions")
+  subscriptions Subscription[]
   auditLogs     AuditLog[]
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Subscription {
-  id      String @id @default(uuid())
-  ownerId String
-  owner   User   @relation("OwnedSubscriptions", fields: [ownerId], references: [id])
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  toolName    String
-  cost        Decimal            @db.Decimal(10, 2)
+  name     String
+  category String?
+
+  amount Decimal @db.Decimal(10, 2)
+
+  billingCycle BillingCycle
+
   renewalDate DateTime
+
   status      SubscriptionStatus @default(ACTIVE)
-  cancelAt    DateTime? // populated when user schedules cancellation at renewalDate
+  cancelledAt DateTime?
+
+  billingHistory BillingHistory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([ownerId])
+  @@index([userId])
   @@index([renewalDate])
-  @@index([cancelAt])
+  @@index([status])
+}
+
+model BillingHistory {
+  id             String       @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+
+  amount      Decimal  @db.Decimal(10, 2)
+  billingDate DateTime
+
+  status BillingStatus @default(PAID)
+
+  createdAt DateTime @default(now())
+
+  @@index([subscriptionId])
+  @@index([billingDate])
 }
 
 model AuditLog {
-  id String @id @default(uuid())
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
 
-  actorId String
-  actor   User   @relation(fields: [actorId], references: [id])
-
-  entityType AuditEntityType
-  entityId   String
-
-  action String
-  before Json?
-  after  Json?
+  action     String
+  entityType String
+  entityId   String?
+  ipAddress  String?
 
   createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType])
+  @@index([createdAt])
 }
