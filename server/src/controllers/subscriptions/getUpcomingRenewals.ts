@@ -1,19 +1,29 @@
 import { Request, Response } from "express";
 import prisma from "../../lib/prisma";
 import { Role, SubscriptionStatus } from "@prisma/client";
+import { getUpcomingRenewalsQuerySchema } from "../../validations/subscriptionValidation";
 
 export const getUpcomingRenewals = async (req: Request, res: Response) => {
+  const parsedQuery = getUpcomingRenewalsQuerySchema.safeParse(req.query);
+  if (!parsedQuery.success) {
+    return res.status(400).json({
+      message: "Invalid query parameters",
+      errors: parsedQuery.error.issues,
+    });
+  }
+
+  const { days } = parsedQuery.data;
   const isAdmin = req.userRole === Role.ADMIN;
 
   try {
     const now = new Date();
-    const in30Days = new Date();
-    in30Days.setDate(now.getDate() + 30);
+    const future = new Date();
+    future.setDate(now.getDate() + days);
 
     const where = {
-      ...(!isAdmin && { ownerId: req.userId }),
+      ...(!isAdmin && { userId: req.userId }),
       status: SubscriptionStatus.ACTIVE,
-      renewalDate: { gte: now, lte: in30Days },
+      renewalDate: { gte: now, lte: future },
     };
 
     const renewals = await prisma.subscription.findMany({
