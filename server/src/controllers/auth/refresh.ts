@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import prisma from "../../lib/prisma";
 import { generateAccessToken } from "../../lib/token";
+import { UserStatus } from "@prisma/client";
 
 export const refresh = async (req: Request, res: Response) => {
   const token = req.cookies?.refreshToken;
@@ -21,8 +22,7 @@ export const refresh = async (req: Request, res: Response) => {
         email: true,
         name: true,
         role: true,
-        isActive: true,
-        profileImageUrl: true,
+        status: true,
         createdAt: true,
       },
     });
@@ -31,11 +31,14 @@ export const refresh = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "User not found" });
     }
 
-    if (!user.isActive) {
-      return res.status(403).json({ message: "Account is disabled" });
+    if (user.status === UserStatus.SUSPENDED) {
+      return res.status(403).json({ message: "Account is suspended" });
     }
 
-    const accessToken = generateAccessToken({ userId: user.id, role: user.role });
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      role: user.role,
+    });
     return res.status(200).json({ accessToken, user });
   } catch (err) {
     console.error(err);

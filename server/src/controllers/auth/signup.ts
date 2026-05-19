@@ -25,22 +25,38 @@ export const signup = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.user.create({
-      data: { name, email, passwordHash: hashedPassword },
+      data: { name, email, password: hashedPassword },
       select: {
         id: true,
         email: true,
         name: true,
         role: true,
-        isActive: true,
-        profileImageUrl: true,
+        status: true,
         createdAt: true,
       },
     });
 
-    const accessToken = generateAccessToken({ userId: newUser.id, role: newUser.role });
+    await prisma.auditLog.create({
+      data: {
+        userId: newUser.id,
+        action: "USER_SIGNED_UP",
+        entityType: "USER",
+        entityId: newUser.id,
+        ipAddress: req.ip ?? null,
+      },
+    });
+
+    const accessToken = generateAccessToken({
+      userId: newUser.id,
+      role: newUser.role,
+    });
     const refreshToken = generateRefreshToken({ userId: newUser.id });
 
-    res.cookie("refreshToken", refreshToken, refreshCookieOptions as CookieOptions);
+    res.cookie(
+      "refreshToken",
+      refreshToken,
+      refreshCookieOptions as CookieOptions,
+    );
     return res.status(201).json({ accessToken, user: newUser });
   } catch (err) {
     console.error(err);
