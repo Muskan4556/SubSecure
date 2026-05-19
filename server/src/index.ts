@@ -6,15 +6,18 @@ import cookieParser from "cookie-parser";
 import prisma from "./lib/prisma";
 import authRoute from "./routes/authRoute";
 import subscriptionRoute from "./routes/subscriptionsRoute";
-import auditLogRoute from "./routes/auditLogs";
+import adminRoute from "./routes/adminRoute";
 import userRoute from "./routes/users";
+import { generalRateLimiter } from "./middlewares/rateLimiter";
 
 const app = express();
 
-// Middleware
+app.set("trust proxy", true);
+
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
+app.use(generalRateLimiter);
 
 app.use(
   cors({
@@ -35,10 +38,9 @@ app.get("/api/health", async (_req, res) => {
 
 app.use("/api/auth", authRoute);
 app.use("/api/subscriptions", subscriptionRoute);
-app.use("/api/audit-logs", auditLogRoute);
+app.use("/api/admin", adminRoute);
 app.use("/api/users", userRoute);
 
-// Start server
 const PORT = Number(process.env.PORT) || 4000;
 
 app.listen(PORT, () => {

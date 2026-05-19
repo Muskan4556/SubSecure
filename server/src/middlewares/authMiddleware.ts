@@ -25,7 +25,10 @@ export const requireAuth = (
     req.userRole = payload.role;
     next();
   } catch (err) {
-    console.error(err);
-    return res.status(401).json({ message: "Unauthorized" });
+    if (err instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    console.error("[requireAuth] Unexpected error:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
