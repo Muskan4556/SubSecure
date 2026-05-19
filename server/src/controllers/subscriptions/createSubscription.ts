@@ -1,7 +1,19 @@
 import { Request, Response } from "express";
 import { createSubscriptionSchema } from "../../validations/subscriptionValidation";
 import prisma from "../../lib/prisma";
-import { AuditEntityType, Prisma, SubscriptionStatus } from "@prisma/client";
+import {
+  BillingCycle,
+  BillingStatus,
+  SubscriptionStatus,
+} from "@prisma/client";
+
+export function advanceByOneCycle(date: Date, cycle: BillingCycle): void {
+  if (cycle === BillingCycle.MONTHLY) {
+    date.setMonth(date.getMonth() + 1);
+  } else {
+    date.setFullYear(date.getFullYear() + 1);
+  }
+}
 
 export const createSubscription = async (req: Request, res: Response) => {
   const parsedData = createSubscriptionSchema.safeParse(req.body);
@@ -12,37 +24,68 @@ export const createSubscription = async (req: Request, res: Response) => {
     });
   }
 
-  const { toolName, cost, renewalDate } = parsedData.data;
+  const { name, category, amount, billingCycle, startDate } = parsedData.data;
 
   try {
     const existing = await prisma.subscription.findFirst({
       where: {
-        ownerId: req.userId,
-        toolName: { equals: toolName, mode: "insensitive" },
-        status: { notIn: [SubscriptionStatus.CANCELLED] },
+        userId: req.userId,
+        name: { equals: name, mode: "insensitive" },
+        status: { not: SubscriptionStatus.CANCELLED },
       },
     });
 
     if (existing) {
       return res.status(409).json({
-        message: `You already have an active subscription for ${toolName}`,
+        message: `You already have an active subscription for "${name}"`,
         existingSubscriptionId: existing.id,
       });
     }
 
-    const newSubscription = await prisma.$transaction(async (tx) => {
+    const today = new Date();
+    // setHours(hours, minutes, seconds, milliseconds)
+    today.setHours(23, 59, 59, 999);
+
+    const billingDates: Date[] = [];
+    const cursor = new Date(startDate);
+
+    while (cursor <= today) {
+      billingDates.push(new Date(cursor));
+      advanceByOneCycle(cursor, billingCycle);
+    }
+
+    // cursor is now the first future date
+    const renewalDate = new Date(cursor);
+
+    const result = await prisma.$transaction(async (tx) => {
       const subscription = await tx.subscription.create({
-        data: { toolName, cost, renewalDate, ownerId: req.userId },
+        data: {
+          name,
+          category: category ?? null,
+          amount,
+          billingCycle,
+          renewalDate,
+          userId: req.userId,
+        },
+      });
+
+      // Bulk-create all backfilled PAID billing entries
+      await tx.billingHistory.createMany({
+        data: billingDates.map((billingDate) => ({
+          subscriptionId: subscription.id,
+          amount: subscription.amount,
+          billingDate,
+          status: BillingStatus.PAID,
+        })),
       });
 
       await tx.auditLog.create({
         data: {
-          actorId: req.userId,
-          entityType: AuditEntityType.SUBSCRIPTION,
+          userId: req.userId,
+          action: "SUB_CREATED",
+          entityType: "SUBSCRIPTION",
           entityId: subscription.id,
-          action: "SUBSCRIPTION_CREATED",
-          before: Prisma.JsonNull,
-          after: subscription,
+          ipAddress: req.ip ?? null,
         },
       });
 
@@ -51,7 +94,8 @@ export const createSubscription = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       message: "Subscription created successfully",
-      data: newSubscription,
+      data: result,
+      billingEntriesCreated: billingDates.length,
     });
   } catch (err) {
     console.error(err);

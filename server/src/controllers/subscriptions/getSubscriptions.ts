@@ -12,34 +12,28 @@ export const getSubscriptions = async (req: Request, res: Response) => {
     });
   }
 
-  const { status, page, limit } = parsedQuery.data;
+  const { status } = parsedQuery.data;
   const isAdmin = req.userRole === Role.ADMIN;
 
   try {
-    const where = {
-      ...(!isAdmin && { ownerId: req.userId }),
-      ...(status && { status }),
-    };
+    const where: any = {};
 
-    const [subscriptions, total] = await Promise.all([
-      prisma.subscription.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-      }),
-      prisma.subscription.count({ where }),
-    ]);
+    if (!isAdmin) {
+      where.userId = req.userId;
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
+    const subscriptions = await prisma.subscription.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
 
     return res.status(200).json({
       message: "Subscriptions fetched successfully",
       data: subscriptions,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
     });
   } catch (err) {
     console.error(err);
