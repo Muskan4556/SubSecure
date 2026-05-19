@@ -2,25 +2,23 @@ import Login from "@/components/Login";
 
 export default function LoginPage() {
   return (
-    <>
-      <div className="fixed inset-0 -z-10 bg-secondary">
-        <div
-          className="absolute inset-0 opacity-[0.025] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(var(--brand-primary) 1px, transparent 1px), linear-gradient(90deg, var(--brand-primary) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-64 w-[600px] rounded-full bg-brand-secondary opacity-[0.06] blur-3xl pointer-events-none" />
-      </div>
-
+    <div
+      className="relative min-h-dvh flex items-center justify-center px-4 py-12 bg-[#06090f]"
+    >
+      {/* ledger grid lines — same as landing hero */}
       <div
-        className="flex items-center justify-center px-4 sm:px-6 py-10 sm:py-12"
-        style={{ minHeight: "100dvh" }}
-      >
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)",
+          backgroundSize: "100% 80px",
+        }}
+      />
+      {/* top emerald glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 h-48 w-[500px] rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
+
+      <div className="relative w-full max-w-sm">
         <Login />
       </div>
-    </>
+    </div>
   );
 }
