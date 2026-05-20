@@ -1,6 +1,6 @@
-import Login from "@/components/Login";
+import Signup from "@/components/Signup";
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <div className="relative min-h-dvh flex flex-col items-center px-4 py-8 sm:py-12 bg-[#06090f]">
       {/* ledger grid lines with intersection dots */}
@@ -19,7 +19,7 @@ export default function LoginPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-48 w-[500px] rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
 
       <div className="relative w-full max-w-sm my-auto">
-        <Login />
+        <Signup />
       </div>
     </div>
   );

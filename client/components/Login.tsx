@@ -10,7 +10,6 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowRight, Shield } from "lucide-react";
 import { toast } from "sonner";
 
-import { DEMO_CREDENTIALS } from "@/lib/types/auth-types";
 import { useLogin } from "@/apis/auth/auth-api";
 
 const SigninSchema = z.object({
@@ -27,7 +26,7 @@ const stagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } },
 };
 
 export default function Login() {
@@ -37,18 +36,12 @@ export default function Login() {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<SigninFormValues>({
     resolver: zodResolver(SigninSchema),
   });
 
   const { mutateAsync: login } = useLogin();
-
-  const fillDemo = () => {
-    reset(DEMO_CREDENTIALS);
-    toast.info("Demo credentials filled in");
-  };
 
   const onSubmit = async (data: SigninFormValues) => {
     try {
@@ -85,9 +78,6 @@ export default function Login() {
           <h1 className="text-[1.35rem] font-bold tracking-tight text-white/90 leading-tight">
             Welcome back
           </h1>
-          <p className="text-[12px] font-mono text-white/30 mt-1">
-            subsecure.io / auth / sign-in
-          </p>
         </div>
 
         {/* Form */}
@@ -148,15 +138,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* Demo fill */}
-          <button
-            type="button"
-            onClick={fillDemo}
-            className="w-full text-[10px] font-mono text-white/25 border border-dashed border-white/10 rounded-lg py-2 px-3 hover:border-emerald-500/30 hover:text-white/45 transition-colors cursor-pointer"
-          >
-            Fill demo credentials
-          </button>
-
           {/* Submit */}
           <button
             type="submit"
@@ -184,7 +165,7 @@ export default function Login() {
           <p className="text-[11px] font-mono text-white/25">
             No account?{" "}
             <Link href="/signup" className="text-white/50 hover:text-white/80 transition-colors">
-              Request access →
+              Sign up →
             </Link>
           </p>
         </div>

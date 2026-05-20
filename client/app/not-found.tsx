@@ -18,8 +18,6 @@ const variants = {
 };
 
 export default function NotFound() {
-  const ts = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
-
   return (
     <div className="min-h-screen bg-[#06090f] relative overflow-hidden flex flex-col">
       {/* ledger lines */}
@@ -57,9 +55,6 @@ export default function NotFound() {
             SubSecure
           </span>
         </Link>
-        <span className="text-[9px] font-mono text-white/20 tracking-wider">
-          subsecure.io / error
-        </span>
       </header>
 
       {/* ── Main content ── */}
@@ -126,7 +121,6 @@ export default function NotFound() {
               Dashboard
               <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
-           
           </motion.div>
         </motion.div>
       </div>
