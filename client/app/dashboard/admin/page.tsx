@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -57,14 +57,14 @@ export default function AdminDashboardPage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1.5">
+        <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1.5">
           Admin Overview
         </p>
-        <h1 className="text-[1.4rem] font-bold tracking-tight text-white/90 leading-tight">
+        <h1 className="text-[1.15rem] sm:text-[1.4rem] font-bold tracking-tight text-white/90 leading-tight">
           {greeting()}
           {user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
         </h1>
-        <p className="text-[12px] text-white/30 font-mono mt-1">
+        <p className="text-[13px] text-white/30 font-mono mt-1">
           {new Date().toLocaleDateString("en-US", {
             weekday: "long",
             month: "long",
@@ -77,7 +77,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-white/6 rounded-xl overflow-hidden border border-white/6">
         {STAT_CARDS.map(({ label, value, sub, color }) => (
           <div key={label} className="bg-[#0d1525] px-5 py-4">
-            <div className="text-[9px] font-mono text-white/25 uppercase tracking-wider mb-2">
+            <div className="text-[11px] font-mono text-white/25 uppercase tracking-wider mb-2">
               {label}
             </div>
             {isLoading ? (
@@ -85,11 +85,11 @@ export default function AdminDashboardPage() {
             ) : (
               <>
                 <div
-                  className={`text-[1.5rem] font-bold leading-none tracking-tight mb-1.5 ${color}`}
+                  className={`text-[1.25rem] sm:text-[1.5rem] font-bold leading-none tracking-tight mb-1.5 ${color}`}
                 >
                   {value}
                 </div>
-                <div className="text-[10px] font-mono text-white/25">{sub}</div>
+                <div className="text-[11px] font-mono text-white/25">{sub}</div>
               </>
             )}
           </div>
@@ -100,7 +100,7 @@ export default function AdminDashboardPage() {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Quick links */}
         <div>
-          <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.15em] mb-3">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-3">
             Quick access
           </p>
           <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
@@ -114,10 +114,10 @@ export default function AdminDashboardPage() {
                   <Icon className="w-3.5 h-3.5 text-white/40 group-hover:text-white/70" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[12px] font-medium text-white/75 group-hover:text-white/90 transition-colors block">
+                  <span className="text-[13px] font-medium text-white/75 group-hover:text-white/90 transition-colors block">
                     {label}
                   </span>
-                  <span className="text-[10px] font-mono text-white/25 mt-0.5 block truncate">
+                  <span className="text-[11px] font-mono text-white/25 mt-0.5 block truncate">
                     {sub}
                   </span>
                 </div>
@@ -128,7 +128,7 @@ export default function AdminDashboardPage() {
 
         {/* User status breakdown */}
         <div>
-          <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.15em] mb-3">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-3">
             User status
           </p>
           <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
@@ -141,7 +141,7 @@ export default function AdminDashboardPage() {
                   <Icon className="w-3.5 h-3.5 text-white/40" />
                 </div>
                 <div className="flex-1">
-                  <span className="text-[12px] font-medium text-white/60 block">
+                  <span className="text-[13px] font-medium text-white/60 block">
                     {label}
                   </span>
                 </div>

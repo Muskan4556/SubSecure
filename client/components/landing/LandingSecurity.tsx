@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { SECURITY_TECHNIQUES, THREAT_MODEL } from "@/lib/data/landing";
 import Reveal from "./Reveal";
@@ -28,7 +28,7 @@ export default function LandingSecurity() {
               {SECURITY_TECHNIQUES.map((t) => (
                 <div
                   key={t.label}
-                  className="flex items-center gap-2.5 text-[12px] font-mono text-white/35"
+                  className="flex items-center gap-2.5 text-[13px] font-mono text-white/35"
                 >
                   <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-500" />
                   {t.label}
@@ -46,12 +46,12 @@ export default function LandingSecurity() {
                   i > 0 ? "border-t border-white/7" : ""
                 }`}
               >
-                <span className="text-[11px] font-mono text-white/20 mt-0.5">{r.n}</span>
+                <span className="text-[12px] font-mono text-white/20 mt-0.5">{r.n}</span>
                 <div>
                   <div className="text-[15px] font-semibold text-white/85 mb-1.5">
                     {r.threat}
                   </div>
-                  <div className="text-[13px] text-white/35 leading-relaxed">{r.fix}</div>
+                  <div className="text-[14px] text-white/35 leading-relaxed">{r.fix}</div>
                 </div>
               </div>
             ))}

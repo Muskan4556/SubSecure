@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -78,11 +78,11 @@ export function SubscriptionDetailCard({
       {/* Card header */}
       <div className="px-5 py-4 border-b border-white/6 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.12em] mb-0.5">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.12em] mb-0.5">
             Subscription
           </p>
           {!editing && (
-            <h2 className="text-[1.1rem] font-bold tracking-tight text-white/90">
+            <h2 className="text-[1rem] sm:text-[1.1rem] font-bold tracking-tight text-white/90">
               {sub.name}
             </h2>
           )}
@@ -93,7 +93,7 @@ export function SubscriptionDetailCard({
             <>
               <button
                 onClick={startEdit}
-                className="inline-flex items-center gap-1 text-[10px] font-mono text-white/30 hover:text-white/70 border border-white/10 hover:border-white/25 px-2.5 py-1 rounded-lg transition-colors"
+                className="inline-flex items-center gap-1 text-[11px] font-mono text-white/30 hover:text-white/70 border border-white/10 hover:border-white/25 px-2.5 py-1 rounded-lg transition-colors"
               >
                 <Pencil className="w-3 h-3" /> Edit
               </button>
@@ -101,7 +101,7 @@ export function SubscriptionDetailCard({
                 <AlertDialogTrigger asChild>
                   <button
                     disabled={cancelling}
-                    className="inline-flex items-center gap-1 text-[10px] font-mono text-red-400/40 hover:text-red-400 border border-red-500/10 hover:border-red-500/30 px-2.5 py-1 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1 text-[11px] font-mono text-red-400/40 hover:text-red-400 border border-red-500/10 hover:border-red-500/30 px-2.5 py-1 rounded-lg transition-colors"
                   >
                     Cancel
                   </button>
@@ -132,7 +132,7 @@ export function SubscriptionDetailCard({
                 form="edit-form"
                 size="sm"
                 disabled={updating}
-                className="bg-white text-black hover:bg-white/90 text-[11px] h-7 px-3"
+                className="bg-white text-black hover:bg-white/90 text-[12px] h-7 px-3"
               >
                 {updating ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -144,7 +144,7 @@ export function SubscriptionDetailCard({
               </Button>
               <button
                 onClick={() => setEditing(false)}
-                className="inline-flex items-center gap-1 text-[10px] font-mono text-white/30 hover:text-white/60 border border-white/10 px-2.5 py-1 rounded-lg transition-colors"
+                className="inline-flex items-center gap-1 text-[11px] font-mono text-white/30 hover:text-white/60 border border-white/10 px-2.5 py-1 rounded-lg transition-colors"
               >
                 <X className="w-3 h-3" /> Discard
               </button>
@@ -163,11 +163,11 @@ export function SubscriptionDetailCard({
         <div className="px-5 py-4 grid grid-cols-2 gap-x-8 gap-y-4">
           {INFO_FIELDS(sub).map(({ label, value }) => (
             <div key={label}>
-              <p className="text-[9px] font-mono text-white/25 uppercase tracking-wider mb-0.5">
+              <p className="text-[11px] font-mono text-white/25 uppercase tracking-wider mb-0.5">
                 {label}
               </p>
               <p
-                className={`text-[12px] font-mono ${
+                className={`text-[13px] font-mono ${
                   value === "ACTIVE"
                     ? "text-emerald-400"
                     : value === "CANCELLED"

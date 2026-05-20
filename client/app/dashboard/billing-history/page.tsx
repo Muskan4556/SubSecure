@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { Receipt, Loader2 } from "lucide-react";
@@ -17,7 +17,7 @@ function StatusBadge({ status }: { status: BillingStatus }) {
   };
   return (
     <span
-      className={`text-[9px] font-mono border px-2 py-0.5 rounded-full ${styles[status]}`}
+      className={`text-[11px] font-mono border px-2 py-0.5 rounded-full ${styles[status]}`}
     >
       {status.charAt(0) + status.slice(1).toLowerCase()}
     </span>
@@ -65,23 +65,23 @@ function BillingRow({ record }: { record: BillingHistoryWithSubscription }) {
     <div className="flex items-center gap-4 bg-[#0d1525] px-5 py-3.5">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2.5">
-          <span className="text-[12px] font-medium text-white/75 truncate">
+          <span className="text-[13px] font-medium text-white/75 truncate">
             {record.subscription.name}
           </span>
           <StatusBadge status={record.status} />
         </div>
         <div className="flex items-center gap-3 mt-0.5">
-          <span className="text-[9px] font-mono text-white/25">
+          <span className="text-[11px] font-mono text-white/25">
             {record.subscription.billingCycle === "MONTHLY" ? "Monthly" : "Yearly"}
           </span>
-          <span className="text-[9px] font-mono text-white/20">
+          <span className="text-[11px] font-mono text-white/20">
             {formatDate(record.billingDate)}
           </span>
         </div>
       </div>
-      <div className="text-[13px] font-mono text-white/70 shrink-0">
+      <div className="text-[14px] font-mono text-white/70 shrink-0">
         {formatAmount(record.amount)}
-        <span className="text-[9px] text-white/25">
+        <span className="text-[11px] text-white/25">
           /{record.subscription.billingCycle === "MONTHLY" ? "mo" : "yr"}
         </span>
       </div>
@@ -118,17 +118,17 @@ export default function BillingHistoryPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
             Finances
           </p>
-          <h1 className="text-[1.25rem] font-bold tracking-tight text-white/90">
+          <h1 className="text-[1.1rem] sm:text-[1.25rem] font-bold tracking-tight text-white/90">
             Billing History
           </h1>
         </div>
 
         {!isLoading && records.length > 0 && (
           <div className="text-right shrink-0">
-            <p className="text-[9px] font-mono text-white/25 uppercase tracking-wider mb-0.5">
+            <p className="text-[11px] font-mono text-white/25 uppercase tracking-wider mb-0.5">
               Total paid
             </p>
             <p className="text-[1.1rem] font-bold font-mono text-emerald-400">
@@ -144,7 +144,7 @@ export default function BillingHistoryPage() {
           <button
             key={id}
             onClick={() => setFilter(id)}
-            className={`text-[10px] font-mono px-3 py-1.5 rounded-lg transition-colors ${
+            className={`text-[11px] font-mono px-3 py-1.5 rounded-lg transition-colors ${
               filter === id
                 ? "bg-white/10 text-white/80"
                 : "text-white/30 hover:text-white/60 hover:bg-white/5"
@@ -164,7 +164,7 @@ export default function BillingHistoryPage() {
         ) : records.length === 0 ? (
           <div className="bg-[#0d1525] px-5 py-10 text-center">
             <Receipt className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-[12px] font-mono text-white/25">
+            <p className="text-[13px] font-mono text-white/25">
               No billing records for this period
             </p>
           </div>
@@ -174,7 +174,7 @@ export default function BillingHistoryPage() {
       </div>
 
       {records.length > 0 && (
-        <p className="text-[10px] font-mono text-white/25">
+        <p className="text-[11px] font-mono text-white/25">
           {records.length} record{records.length !== 1 ? "s" : ""}
         </p>
       )}

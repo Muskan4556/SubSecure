@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Loader2, BarChart3, TrendingUp, ArrowUpRight } from "lucide-react";
@@ -11,9 +11,9 @@ function StatCard({ label, value, sub, accent }: { label: string; value: string 
   const valueColor = accent === "green" ? "text-emerald-400" : accent === "red" ? "text-red-400" : accent === "amber" ? "text-amber-400" : "text-white/90";
   return (
     <div className="bg-[#0d1525] px-5 py-4">
-      <div className="text-[9px] font-mono text-white/25 uppercase tracking-wider mb-2">{label}</div>
-      <div className={`text-[1.6rem] font-bold leading-none tracking-tight mb-1.5 ${valueColor}`}>{value}</div>
-      {sub && <div className="text-[10px] font-mono text-white/25">{sub}</div>}
+      <div className="text-[11px] font-mono text-white/25 uppercase tracking-wider mb-2">{label}</div>
+      <div className={`text-[1.35rem] sm:text-[1.6rem] font-bold leading-none tracking-tight mb-1.5 ${valueColor}`}>{value}</div>
+      {sub && <div className="text-[11px] font-mono text-white/25">{sub}</div>}
     </div>
   );
 }
@@ -49,17 +49,17 @@ export default function AnalyticsPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
+        <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
           Analytics
         </p>
-        <h1 className="text-[1.25rem] font-bold tracking-tight text-white/90">
+        <h1 className="text-[1.1rem] sm:text-[1.25rem] font-bold tracking-tight text-white/90">
           Spending overview
         </h1>
       </div>
 
       {/* User stats */}
       <div>
-        <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.12em] mb-3">
+        <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.12em] mb-3">
           Your subscriptions
         </p>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/6 rounded-xl overflow-hidden border border-white/6">
@@ -74,37 +74,37 @@ export default function AnalyticsPage() {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Billing cycle breakdown */}
         <div>
-          <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.12em] mb-3">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.12em] mb-3">
             Billing cycle breakdown
           </p>
           <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
             <div className="flex items-center justify-between bg-[#0d1525] px-5 py-3.5">
               <div>
-                <p className="text-[12px] font-medium text-white/70">Monthly plans</p>
-                <p className="text-[9px] font-mono text-white/25 mt-0.5">
+                <p className="text-[13px] font-medium text-white/70">Monthly plans</p>
+                <p className="text-[11px] font-mono text-white/25 mt-0.5">
                   {allSubs?.data?.filter((s) => s.billingCycle === "MONTHLY").length ?? 0} subscriptions
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[13px] font-mono text-white/80">{formatAmount(monthlyTotal)}<span className="text-[9px] text-white/25">/mo</span></p>
-                <p className="text-[10px] font-mono text-white/25">{formatAmount(monthlyTotal * 12)}/yr</p>
+                <p className="text-[14px] font-mono text-white/80">{formatAmount(monthlyTotal)}<span className="text-[11px] text-white/25">/mo</span></p>
+                <p className="text-[11px] font-mono text-white/25">{formatAmount(monthlyTotal * 12)}/yr</p>
               </div>
             </div>
             <div className="flex items-center justify-between bg-[#0d1525] px-5 py-3.5">
               <div>
-                <p className="text-[12px] font-medium text-white/70">Yearly plans</p>
-                <p className="text-[9px] font-mono text-white/25 mt-0.5">
+                <p className="text-[13px] font-medium text-white/70">Yearly plans</p>
+                <p className="text-[11px] font-mono text-white/25 mt-0.5">
                   {allSubs?.data?.filter((s) => s.billingCycle === "YEARLY").length ?? 0} subscriptions
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[13px] font-mono text-white/80">{formatAmount(yearlyTotal)}<span className="text-[9px] text-white/25">/yr</span></p>
-                <p className="text-[10px] font-mono text-white/25">{formatAmount(Math.round(yearlyTotal / 12))}/mo equiv.</p>
+                <p className="text-[14px] font-mono text-white/80">{formatAmount(yearlyTotal)}<span className="text-[11px] text-white/25">/yr</span></p>
+                <p className="text-[11px] font-mono text-white/25">{formatAmount(Math.round(yearlyTotal / 12))}/mo equiv.</p>
               </div>
             </div>
             <div className="flex items-center justify-between bg-white/4 px-5 py-3.5">
-              <p className="text-[12px] font-medium text-white/50">Total annual commitment</p>
-              <p className="text-[13px] font-mono text-white/80">
+              <p className="text-[13px] font-medium text-white/50">Total annual commitment</p>
+              <p className="text-[14px] font-mono text-white/80">
                 {formatAmount(Math.round(monthlyTotal * 12 + yearlyTotal))}
               </p>
             </div>
@@ -114,12 +114,12 @@ export default function AnalyticsPage() {
         {/* Recent active subscriptions */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.12em]">
+            <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.12em]">
               Active subscriptions
             </p>
             <Link
               href="/dashboard/subscriptions"
-              className="text-[9px] font-mono text-white/20 hover:text-white/50 flex items-center gap-1 transition-colors"
+              className="text-[11px] font-mono text-white/20 hover:text-white/50 flex items-center gap-1 transition-colors"
             >
               View all <ArrowUpRight className="w-3 h-3" />
             </Link>
@@ -128,17 +128,17 @@ export default function AnalyticsPage() {
             {(allSubs?.data ?? []).slice(0, 6).map((sub) => (
               <div key={sub.id} className="flex items-center gap-3 bg-[#0d1525] px-5 py-2.5">
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-medium text-white/65 truncate">{sub.name}</p>
-                  {sub.category && <p className="text-[9px] font-mono text-white/25">{sub.category}</p>}
+                  <p className="text-[12px] font-medium text-white/65 truncate">{sub.name}</p>
+                  {sub.category && <p className="text-[11px] font-mono text-white/25">{sub.category}</p>}
                 </div>
-                <p className="text-[11px] font-mono text-white/55 shrink-0">
-                  {formatAmount(sub.amount)}<span className="text-[9px] text-white/25">/{sub.billingCycle === "MONTHLY" ? "mo" : "yr"}</span>
+                <p className="text-[12px] font-mono text-white/55 shrink-0">
+                  {formatAmount(sub.amount)}<span className="text-[11px] text-white/25">/{sub.billingCycle === "MONTHLY" ? "mo" : "yr"}</span>
                 </p>
               </div>
             ))}
             {(allSubs?.data?.length ?? 0) === 0 && (
               <div className="bg-[#0d1525] px-5 py-6 text-center">
-                <p className="text-[11px] font-mono text-white/25">No active subscriptions</p>
+                <p className="text-[12px] font-mono text-white/25">No active subscriptions</p>
               </div>
             )}
           </div>
@@ -148,7 +148,7 @@ export default function AnalyticsPage() {
       {/* Admin platform stats */}
       {isAdmin && adminData && (
         <div>
-          <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.12em] mb-3">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.12em] mb-3">
             Platform analytics
           </p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/6 rounded-xl overflow-hidden border border-white/6">
@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
       )}
 
       {/* Insight hint */}
-      <div className="flex items-center gap-2 text-[10px] font-mono text-white/20">
+      <div className="flex items-center gap-2 text-[11px] font-mono text-white/20">
         <TrendingUp className="w-3.5 h-3.5" />
         <BarChart3 className="w-3.5 h-3.5" />
         <span>Spend is calculated based on active subscriptions. Yearly plans are normalised to monthly equivalents.</span>

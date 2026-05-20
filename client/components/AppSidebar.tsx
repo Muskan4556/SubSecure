@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,7 +33,7 @@ function UserAvatar({ name }: { name: string }) {
     .toUpperCase();
 
   return (
-    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-violet-400 to-blue-500 text-[10px] font-semibold text-white select-none shrink-0">
+    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-violet-400 to-blue-500 text-[11px] font-semibold text-white select-none shrink-0">
       {initials}
     </div>
   );
@@ -56,10 +56,10 @@ function AppSidebarInner() {
                   <Shield className="size-3.5 text-white" />
                 </div>
                 <div className="leading-tight">
-                  <span className="text-[13px] font-semibold tracking-tight">
+                  <span className="text-[14px] font-semibold tracking-tight">
                     SubSecure
                   </span>
-                  <p className="text-[10px] font-mono text-sidebar-foreground/40">
+                  <p className="text-[11px] font-mono text-sidebar-foreground/40">
                     Subscription Management
                   </p>
                 </div>
@@ -79,7 +79,7 @@ function AppSidebarInner() {
 
           return (
             <SidebarGroup key={group.label}>
-              <SidebarGroupLabel className="text-[9px] font-mono uppercase tracking-[0.15em] text-sidebar-foreground/30">
+              <SidebarGroupLabel className="text-[11px] font-mono uppercase tracking-[0.15em] text-sidebar-foreground/30">
                 {group.label}
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -99,7 +99,7 @@ function AppSidebarInner() {
                         >
                           <Link href={href}>
                             <Icon className="shrink-0" />
-                            <span className="text-[12px]">{label}</span>
+                            <span className="text-[13px]">{label}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -124,16 +124,16 @@ function AppSidebarInner() {
                 <UserAvatar name={user.name} />
                 <div className="flex-1 leading-tight overflow-hidden">
                   <div className="flex items-center gap-1.5">
-                    <span className="truncate text-[12px] font-medium text-sidebar-foreground/80">
+                    <span className="truncate text-[13px] font-medium text-sidebar-foreground/80">
                       {user.name}
                     </span>
                     {user.role === "ADMIN" && (
-                      <span className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-px text-[8px] font-mono uppercase tracking-wide text-emerald-400">
+                      <span className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-px text-[10px] font-mono uppercase tracking-wide text-emerald-400">
                         Admin
                       </span>
                     )}
                   </div>
-                  <span className="truncate text-[10px] font-mono text-sidebar-foreground/30">
+                  <span className="truncate text-[11px] font-mono text-sidebar-foreground/30">
                     {user.email}
                   </span>
                 </div>
@@ -151,7 +151,7 @@ function AppSidebarInner() {
               className="text-sidebar-foreground/40 hover:text-red-400 hover:bg-red-500/8 cursor-pointer transition-colors"
             >
               <LogOut className="shrink-0" />
-              <span className="text-[12px]">
+              <span className="text-[13px]">
                 {isPending ? "Signing out…" : "Sign out"}
               </span>
             </SidebarMenuButton>
@@ -179,7 +179,7 @@ export default function AppSidebar({
           <SidebarTrigger className="-ml-1 text-sidebar-foreground/40 hover:text-sidebar-foreground" />
           <div className="h-3.5 w-px bg-border" />
           <ChevronRight className="w-3 h-3 text-white/20" />
-          <p className="text-[11px] font-mono text-white/30">Dashboard</p>
+          <p className="text-[12px] font-mono text-white/30">Dashboard</p>
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-6">{children}</div>

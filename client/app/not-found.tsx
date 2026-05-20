@@ -70,7 +70,7 @@ export default function NotFound() {
             variants={variants.item}
             className="flex items-center gap-2.5 mb-10"
           >
-            <span className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 text-red-400/80 text-[9px] font-mono uppercase tracking-[0.18em] px-3 py-1.5 rounded-full">
+            <span className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 text-red-400/80 text-[11px] font-mono uppercase tracking-[0.18em] px-3 py-1.5 rounded-full">
               System Notice — Route Not Found
             </span>
           </motion.div>

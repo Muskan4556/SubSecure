@@ -1,4 +1,4 @@
-import { UseFormRegister } from "react-hook-form";
+﻿import { UseFormRegister } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import type { EditSubscriptionValues } from "@/lib/validations/subscriptionValidation";
 
@@ -16,7 +16,7 @@ export function SubscriptionEditForm({
       className="px-5 py-4 grid grid-cols-2 gap-4"
     >
       <div className="space-y-1 col-span-2">
-        <label className="text-[9px] font-mono text-white/30 uppercase tracking-wider">
+        <label className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
           Name
         </label>
         <Input
@@ -25,7 +25,7 @@ export function SubscriptionEditForm({
         />
       </div>
       <div className="space-y-1">
-        <label className="text-[9px] font-mono text-white/30 uppercase tracking-wider">
+        <label className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
           Category
         </label>
         <Input
@@ -34,7 +34,7 @@ export function SubscriptionEditForm({
         />
       </div>
       <div className="space-y-1">
-        <label className="text-[9px] font-mono text-white/30 uppercase tracking-wider">
+        <label className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
           Amount (₹)
         </label>
         <Input
@@ -45,7 +45,7 @@ export function SubscriptionEditForm({
         />
       </div>
       <div className="space-y-1">
-        <label className="text-[9px] font-mono text-white/30 uppercase tracking-wider">
+        <label className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
           Billing cycle
         </label>
         <select
@@ -57,7 +57,7 @@ export function SubscriptionEditForm({
         </select>
       </div>
       <div className="space-y-1">
-        <label className="text-[9px] font-mono text-white/30 uppercase tracking-wider">
+        <label className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
           Renewal date
         </label>
         <Input

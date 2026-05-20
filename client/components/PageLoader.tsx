@@ -1,4 +1,4 @@
-import { Shield } from "lucide-react";
+﻿import { Shield } from "lucide-react";
 
 export default function PageLoader() {
   return (
@@ -51,11 +51,8 @@ export default function PageLoader() {
 
       {/* label */}
       <div className="flex flex-col items-center gap-1.5 select-none">
-        <p className="text-[11px] font-mono text-white/50 tracking-[0.2em] uppercase">
+        <p className="text-[12px] font-mono text-white/50 tracking-[0.2em] uppercase">
           SubSecure
-        </p>
-        <p className="text-[9px] font-mono text-white/20 tracking-wider">
-          Verifying session…
         </p>
       </div>
     </div>

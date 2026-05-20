@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Loader2, Users } from "lucide-react";
@@ -43,15 +43,15 @@ export default function AdminUsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
             Admin
           </p>
-          <h1 className="text-[1.25rem] font-bold tracking-tight text-white/90">
+          <h1 className="text-[1.1rem] sm:text-[1.25rem] font-bold tracking-tight text-white/90">
             User Management
           </h1>
         </div>
         {!isLoading && (
-          <p className="text-[10px] font-mono text-white/25 shrink-0">
+          <p className="text-[11px] font-mono text-white/25 shrink-0">
             {allUsers.length} total ·{" "}
             {allUsers.filter((u) => u.status === "ACTIVE").length} active ·{" "}
             {allUsers.filter((u) => u.status === "SUSPENDED").length} suspended
@@ -65,7 +65,7 @@ export default function AdminUsersPage() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`text-[10px] font-mono px-3 py-1.5 rounded-lg transition-colors ${
+            className={`text-[11px] font-mono px-3 py-1.5 rounded-lg transition-colors ${
               filter === f
                 ? "bg-white/10 text-white/80"
                 : "text-white/30 hover:text-white/60 hover:bg-white/5"
@@ -85,7 +85,7 @@ export default function AdminUsersPage() {
         ) : users.length === 0 ? (
           <div className="bg-[#0d1525] px-5 py-10 text-center">
             <Users className="w-6 h-6 text-white/10 mx-auto mb-2" />
-            <p className="text-[12px] font-mono text-white/25">
+            <p className="text-[13px] font-mono text-white/25">
               No users found
             </p>
           </div>
@@ -103,7 +103,7 @@ export default function AdminUsersPage() {
       </div>
 
       {users.length > 0 && (
-        <p className="text-[10px] font-mono text-white/25">
+        <p className="text-[11px] font-mono text-white/25">
           {users.length} user{users.length !== 1 ? "s" : ""}
         </p>
       )}

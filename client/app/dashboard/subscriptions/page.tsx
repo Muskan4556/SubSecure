@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -34,16 +34,16 @@ export default function SubscriptionsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
             Subscriptions
           </p>
-          <h1 className="text-[1.25rem] font-bold tracking-tight text-white/90">
+          <h1 className="text-[1.1rem] sm:text-[1.25rem] font-bold tracking-tight text-white/90">
             All subscriptions
           </h1>
         </div>
         <Link
           href="/dashboard/subscriptions/new"
-          className="inline-flex items-center gap-2 text-[12px] font-semibold text-white border border-white/15 hover:border-white/30 hover:bg-white/5 px-4 py-2 rounded-lg transition-all shrink-0"
+          className="inline-flex items-center gap-2 text-[13px] font-semibold text-white border border-white/15 hover:border-white/30 hover:bg-white/5 px-4 py-2 rounded-lg transition-all shrink-0"
         >
           <PlusCircle className="w-3.5 h-3.5" />
           Add subscription
@@ -56,7 +56,7 @@ export default function SubscriptionsPage() {
           <button
             key={String(s)}
             onClick={() => setStatusFilter(s)}
-            className={`text-[10px] font-mono px-3 py-1.5 rounded-lg transition-colors ${
+            className={`text-[11px] font-mono px-3 py-1.5 rounded-lg transition-colors ${
               statusFilter === s
                 ? "bg-white/10 text-white/80"
                 : "text-white/30 hover:text-white/60 hover:bg-white/5"
@@ -75,12 +75,12 @@ export default function SubscriptionsPage() {
           </div>
         ) : subscriptions.length === 0 ? (
           <div className="bg-[#0d1525] px-5 py-10 text-center">
-            <p className="text-[12px] font-mono text-white/25">
+            <p className="text-[13px] font-mono text-white/25">
               No subscriptions found
             </p>
             <Link
               href="/dashboard/subscriptions/new"
-              className="text-[11px] font-mono text-blue-400/60 hover:text-blue-400 mt-2 block transition-colors"
+              className="text-[12px] font-mono text-blue-400/60 hover:text-blue-400 mt-2 block transition-colors"
             >
               + Add your first subscription
             </Link>
@@ -98,7 +98,7 @@ export default function SubscriptionsPage() {
       </div>
 
       {subscriptions.length > 0 && (
-        <p className="text-[10px] font-mono text-white/25">
+        <p className="text-[11px] font-mono text-white/25">
           {subscriptions.length} subscription
           {subscriptions.length !== 1 ? "s" : ""}
         </p>

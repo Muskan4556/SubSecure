@@ -1,4 +1,4 @@
-import type { BillingStatus } from "@/lib/types/subscription-types";
+﻿import type { BillingStatus } from "@/lib/types/subscription-types";
 
 const STATUS_STYLES: Record<BillingStatus, string> = {
   PAID: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
@@ -9,7 +9,7 @@ const STATUS_STYLES: Record<BillingStatus, string> = {
 export function BillingStatusBadge({ status }: { status: BillingStatus }) {
   return (
     <span
-      className={`text-[9px] font-mono border px-2 py-0.5 rounded-full ${STATUS_STYLES[status]}`}
+      className={`text-[11px] font-mono border px-2 py-0.5 rounded-full ${STATUS_STYLES[status]}`}
     >
       {status}
     </span>

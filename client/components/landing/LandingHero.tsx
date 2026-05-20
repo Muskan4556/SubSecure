@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -26,7 +26,7 @@ export default function LandingHero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="flex items-center gap-3 mb-10 text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]"
+          className="flex items-center gap-3 mb-10 text-[11px] font-mono text-white/30 uppercase tracking-[0.2em]"
         >
           <span className="w-8 h-px bg-white/20" />
           Subscription Security Platform — SDG 8
@@ -65,7 +65,7 @@ export default function LandingHero() {
             </Link>
             <Link
               href="/login"
-              className="text-[13px] text-white/25 hover:text-white/50 transition-colors"
+              className="text-[14px] text-white/25 hover:text-white/50 transition-colors"
             >
               Sign in
             </Link>

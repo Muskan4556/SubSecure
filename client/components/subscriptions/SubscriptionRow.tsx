@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -19,11 +19,11 @@ import {
 
 function StatusBadge({ status }: { status: SubscriptionStatus }) {
   return status === "ACTIVE" ? (
-    <span className="text-[9px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+    <span className="text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">
       Active
     </span>
   ) : (
-    <span className="text-[9px] font-mono bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full">
+    <span className="text-[11px] font-mono bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full">
       Cancelled
     </span>
   );
@@ -50,7 +50,7 @@ export function SubscriptionRow({
         <div className="flex items-center gap-2.5">
           <Link
             href={`/dashboard/subscriptions/${sub.id}`}
-            className="text-[12px] font-medium text-white/75 hover:text-white/90 transition-colors truncate"
+            className="text-[13px] font-medium text-white/75 hover:text-white/90 transition-colors truncate"
           >
             {sub.name}
           </Link>
@@ -58,16 +58,16 @@ export function SubscriptionRow({
         </div>
         <div className="flex items-center gap-3 mt-0.5">
           {sub.category && (
-            <span className="text-[9px] font-mono text-white/25">
+            <span className="text-[11px] font-mono text-white/25">
               {sub.category}
             </span>
           )}
-          <span className="text-[9px] font-mono text-white/20">
+          <span className="text-[11px] font-mono text-white/20">
             {sub.billingCycle === "MONTHLY" ? "Monthly" : "Yearly"}
           </span>
           {sub.status === "ACTIVE" && (
             <span
-              className={`text-[9px] font-mono ${daysUntil <= 7 ? "text-amber-400/70" : "text-white/20"}`}
+              className={`text-[11px] font-mono ${daysUntil <= 7 ? "text-amber-400/70" : "text-white/20"}`}
             >
               renews{" "}
               {formatDateShort(sub.renewalDate)}
@@ -77,9 +77,9 @@ export function SubscriptionRow({
         </div>
       </div>
 
-      <div className="text-[13px] font-mono text-white/70 shrink-0">
+      <div className="text-[14px] font-mono text-white/70 shrink-0">
         {formatAmount(sub.amount)}
-        <span className="text-[9px] text-white/25">
+        <span className="text-[11px] text-white/25">
           /{sub.billingCycle === "MONTHLY" ? "mo" : "yr"}
         </span>
       </div>
@@ -87,7 +87,7 @@ export function SubscriptionRow({
       <div className="flex items-center gap-2 shrink-0">
         <Link
           href={`/dashboard/subscriptions/${sub.id}`}
-          className="text-[10px] font-mono text-white/30 hover:text-white/70 transition-colors flex items-center gap-1"
+          className="text-[11px] font-mono text-white/30 hover:text-white/70 transition-colors flex items-center gap-1"
         >
           View <ArrowUpRight className="w-3 h-3" />
         </Link>
@@ -95,7 +95,7 @@ export function SubscriptionRow({
         {sub.status === "ACTIVE" && (
           <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-              <button className="text-[10px] font-mono text-red-400/40 hover:text-red-400 transition-colors">
+              <button className="text-[11px] font-mono text-red-400/40 hover:text-red-400 transition-colors">
                 Cancel
               </button>
             </AlertDialogTrigger>

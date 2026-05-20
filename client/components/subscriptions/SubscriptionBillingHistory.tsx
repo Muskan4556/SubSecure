@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Receipt, Loader2 } from "lucide-react";
 import { BillingStatusBadge } from "@/components/subscriptions/BillingStatusBadge";
@@ -15,7 +15,7 @@ export function SubscriptionBillingHistory({ history, isLoading }: Props) {
     <div>
       <div className="flex items-center gap-2 mb-3">
         <Receipt className="w-3.5 h-3.5 text-white/25" />
-        <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.15em]">
+        <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em]">
           Billing history
         </p>
       </div>
@@ -27,7 +27,7 @@ export function SubscriptionBillingHistory({ history, isLoading }: Props) {
           </div>
         ) : history.length === 0 ? (
           <div className="bg-[#0d1525] px-5 py-6 text-center">
-            <p className="text-[11px] font-mono text-white/25">
+            <p className="text-[12px] font-mono text-white/25">
               No billing records yet
             </p>
           </div>
@@ -38,12 +38,12 @@ export function SubscriptionBillingHistory({ history, isLoading }: Props) {
               className="flex items-center gap-4 bg-[#0d1525] px-5 py-3"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-mono text-white/55">
+                <p className="text-[12px] font-mono text-white/55">
                   {formatDateLong(record.billingDate)}
                 </p>
               </div>
               <BillingStatusBadge status={record.status} />
-              <p className="text-[12px] font-mono text-white/70 shrink-0">
+              <p className="text-[13px] font-mono text-white/70 shrink-0">
                 {formatAmount(record.amount)}
               </p>
             </div>

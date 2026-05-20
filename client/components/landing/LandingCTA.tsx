@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
@@ -11,7 +11,7 @@ export default function LandingCTA() {
         <Reveal>
           <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10">
             <div>
-              <div className="text-[11px] font-mono text-white/25 uppercase tracking-widest mb-5">
+              <div className="text-[12px] font-mono text-white/25 uppercase tracking-widest mb-5">
                 — Get started
               </div>
               <h2 className="text-[2rem] sm:text-[2.8rem] font-bold tracking-tight leading-[1.1] max-w-xl">
@@ -29,7 +29,7 @@ export default function LandingCTA() {
               </Link>
               <Link
                 href="/login"
-                className="text-[12px] text-white/25 hover:text-white/50 text-center transition-colors"
+                className="text-[13px] text-white/25 hover:text-white/50 text-center transition-colors"
               >
                 Already have an account? Sign in →
               </Link>

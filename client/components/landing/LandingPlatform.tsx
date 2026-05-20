@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { FEATURES } from "@/lib/data/landing";
 import Reveal from "./Reveal";
@@ -29,7 +29,7 @@ export default function LandingPlatform() {
                   <div className="text-[14px] md:text-[15px] font-semibold text-slate-900 mb-1 md:mb-0 md:mt-0.5 leading-tight">
                     {f.name}
                   </div>
-                  <div className="text-[13px] md:text-[14px] text-slate-500 leading-relaxed">
+                  <div className="text-[14px] md:text-[14px] text-slate-500 leading-relaxed">
                     {f.desc}
                   </div>
                 </div>

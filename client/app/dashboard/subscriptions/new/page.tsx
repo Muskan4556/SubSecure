@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -39,13 +39,13 @@ function Field({
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between">
-        <label className="text-[10px] font-mono text-white/40 uppercase tracking-[0.12em]">
+        <label className="text-[11px] font-mono text-white/40 uppercase tracking-[0.12em]">
           {label}
         </label>
-        {hint && <span className="text-[9px] font-mono text-white/20">{hint}</span>}
+        {hint && <span className="text-[11px] font-mono text-white/20">{hint}</span>}
       </div>
       {children}
-      {error && <p className="text-[10px] font-mono text-red-400/70">{error}</p>}
+      {error && <p className="text-[11px] font-mono text-red-400/70">{error}</p>}
     </div>
   );
 }
@@ -90,10 +90,10 @@ export default function NewSubscriptionPage() {
     <div className="max-w-lg space-y-7">
       {/* Header */}
       <div>
-        <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
+        <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
           Subscriptions
         </p>
-        <h1 className="text-[1.25rem] font-bold tracking-tight text-white/90">
+        <h1 className="text-[1.1rem] sm:text-[1.25rem] font-bold tracking-tight text-white/90">
           Add subscription
         </h1>
       </div>
@@ -101,7 +101,7 @@ export default function NewSubscriptionPage() {
       {/* Onboarding note */}
       <div className="flex items-start gap-2.5 bg-blue-500/8 border border-blue-500/15 rounded-xl px-4 py-3">
         <Info className="w-4 h-4 text-blue-400/70 shrink-0 mt-0.5" />
-        <p className="text-[11px] text-blue-300/60 font-mono leading-relaxed">
+        <p className="text-[12px] text-blue-300/60 font-mono leading-relaxed">
           Enter the date you <strong className="text-blue-300/80">first paid</strong> for this
           subscription. The system will automatically backfill all past billing cycles as{" "}
           <strong className="text-blue-300/80">&ldquo;Paid&rdquo;</strong> and set the correct
@@ -161,7 +161,7 @@ export default function NewSubscriptionPage() {
             max={today}
             className="bg-white/4 border-white/10 text-white/80 scheme-dark"
           />
-          <p className="text-[9px] font-mono text-white/20 mt-1">
+          <p className="text-[11px] font-mono text-white/20 mt-1">
             All billing cycles from this date to today will be logged as Paid. The next renewal
             date is computed automatically.
           </p>
@@ -171,7 +171,7 @@ export default function NewSubscriptionPage() {
           <Button
             type="submit"
             disabled={isPending}
-            className="bg-white text-black hover:bg-white/90 font-semibold text-[12px]"
+            className="bg-white text-black hover:bg-white/90 font-semibold text-[13px]"
           >
             {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save subscription"}
           </Button>
@@ -179,7 +179,7 @@ export default function NewSubscriptionPage() {
             type="button"
             variant="ghost"
             onClick={() => router.back()}
-            className="text-white/40 hover:text-white/70 text-[12px]"
+            className="text-white/40 hover:text-white/70 text-[13px]"
           >
             Cancel
           </Button>

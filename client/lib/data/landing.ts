@@ -11,7 +11,6 @@ import {
 
 // Ticker items
 export const TICKER_ITEMS = [
-  "AES-256 ENCRYPTION",
   "ROLE-BASED ACCESS CONTROL",
   "IMMUTABLE AUDIT TRAILS",
   "IDEMPOTENT API OPERATIONS",
@@ -19,8 +18,10 @@ export const TICKER_ITEMS = [
   "HTTPONLY REFRESH COOKIES",
   "JWT ACCESS TOKENS",
   "DUPLICATE BILLING GUARD",
+  "ZOD SCHEMA VALIDATION",
   "SERVER-SIDE VALIDATION",
   "ZERO-TRUST API DESIGN",
+  "EXPRESS RATE LIMITING",
 ] as const;
 
 // Dashboard mockup data
@@ -75,8 +76,8 @@ export type DashboardStat = { label: string; value: string; green?: boolean };
 export const DASHBOARD_STATS: DashboardStat[] = [
   { label: "Monthly Spend", value: "$213" },
   { label: "Annual Commitment", value: "$1,384" },
-  { label: "Security Score", value: "94 / 100", green: true },
-  { label: "Audit Events (30d)", value: "18" },
+  { label: "Upcoming Renewals", value: "3", green: true },
+  { label: "Audit Events (24h)", value: "18" },
 ];
 
 export type SidebarNavItem = {
@@ -91,7 +92,7 @@ export const DASHBOARD_SIDEBAR_NAV: SidebarNavItem[] = [
   { icon: Activity, label: "Audit Log", badge: "12" },
   { icon: Bell, label: "Renewals", badge: "2" },
   { icon: FileText, label: "Billing History" },
-  { icon: Users, label: "Team" },
+  { icon: Users, label: "Analytics" },
 ];
 
 // Problem section data
@@ -116,8 +117,9 @@ export const SECURITY_TECHNIQUES: SecurityTechnique[] = [
   { label: "bcrypt · cost-10" },
   { label: "JWT · 15m access tokens" },
   { label: "httpOnly refresh cookies" },
-  { label: "AES-256 at rest" },
+  { label: "Express rate limiting" },
   { label: "Idempotent writes" },
+  { label: "Zod server-side validation" },
 ];
 
 export type ThreatRow = { n: string; threat: string; fix: string };
@@ -126,12 +128,12 @@ export const THREAT_MODEL: ThreatRow[] = [
   {
     n: "01",
     threat: "Credential Compromise",
-    fix: "Account lockout after failed attempts, bcrypt hashing, strong password policy enforced at signup.",
+    fix: "Rate-limited login endpoints, bcrypt hashing, strong password policy enforced at signup.",
   },
   {
     n: "02",
     threat: "Payment Data Leakage",
-    fix: "AES-256 encrypted storage, HTTPS-only transport, all endpoints behind authenticated middleware.",
+    fix: "HTTPS-only transport, all endpoints behind authenticated middleware, no raw credentials stored.",
   },
   {
     n: "03",
@@ -172,7 +174,7 @@ export const FEATURES: Feature[] = [
   {
     icon: XCircle,
     name: "Controlled Cancellation",
-    desc: "Cancel immediately or schedule for the renewal date. Undo anytime before billing closes. No rogue cancellations.",
+    desc: "Cancel any active subscription immediately. Every cancellation is logged with actor identity — no silent or unauthorized reversals.",
   },
   {
     icon: Bell,
@@ -211,11 +213,3 @@ export const MISSION_POINTS: MissionPoint[] = [
     text: "Role-based access stops insider billing manipulation",
   },
 ];
-
-// Footer data
-export const COMPLIANCE_BADGES = [
-  "ISO 27001",
-  "GDPR Ready",
-  "SOC 2",
-  "OWASP Top 10",
-] as const;

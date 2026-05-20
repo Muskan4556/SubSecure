@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,10 +20,10 @@ type FormValues = z.infer<typeof schema>;
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-      <span className="text-[10px] font-mono text-white/30 uppercase tracking-wider">
+      <span className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
         {label}
       </span>
-      <span className="text-[12px] font-mono text-white/60">{value}</span>
+      <span className="text-[13px] font-mono text-white/60">{value}</span>
     </div>
   );
 }
@@ -80,10 +80,10 @@ export default function ProfilePage() {
     <div className="space-y-8 max-w-lg">
       {/* Header */}
       <div>
-        <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
+        <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
           Account
         </p>
-        <h1 className="text-[1.25rem] font-bold tracking-tight text-white/90">
+        <h1 className="text-[1.1rem] sm:text-[1.25rem] font-bold tracking-tight text-white/90">
           Profile
         </h1>
       </div>
@@ -96,11 +96,11 @@ export default function ProfilePage() {
         <div>
           <p className="text-[14px] font-semibold text-white/80">{me?.name}</p>
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-[10px] font-mono text-white/30">
+            <span className="text-[11px] font-mono text-white/30">
               {me?.email}
             </span>
             {me?.role === "ADMIN" && (
-              <span className="text-[8px] font-mono bg-emerald-500/15 text-emerald-400 px-1.5 py-px rounded-full uppercase">
+              <span className="text-[10px] font-mono bg-emerald-500/15 text-emerald-400 px-1.5 py-px rounded-full uppercase">
                 Admin
               </span>
             )}
@@ -111,13 +111,13 @@ export default function ProfilePage() {
       {/* Edit name */}
       <div className="bg-white/3 border border-white/8 rounded-xl overflow-hidden">
         <div className="px-5 py-3 border-b border-white/6">
-          <p className="text-[10px] font-mono text-white/30 uppercase tracking-wider flex items-center gap-1.5">
+          <p className="text-[11px] font-mono text-white/30 uppercase tracking-wider flex items-center gap-1.5">
             <User className="w-3 h-3" /> Edit profile
           </p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="px-5 py-4 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-mono text-white/30 uppercase tracking-wider">
+            <label className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
               Display name
             </label>
             <Input
@@ -125,7 +125,7 @@ export default function ProfilePage() {
               className="bg-white/4 border-white/10 text-white/80 placeholder:text-white/20"
             />
             {errors.name && (
-              <p className="text-[10px] font-mono text-red-400/70">
+              <p className="text-[11px] font-mono text-red-400/70">
                 {errors.name.message}
               </p>
             )}
@@ -134,7 +134,7 @@ export default function ProfilePage() {
           <Button
             type="submit"
             disabled={updating || !isDirty}
-            className="bg-white text-black hover:bg-white/90 font-semibold text-[12px] disabled:opacity-40"
+            className="bg-white text-black hover:bg-white/90 font-semibold text-[13px] disabled:opacity-40"
           >
             {updating ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -148,7 +148,7 @@ export default function ProfilePage() {
       {/* Account info */}
       <div className="bg-white/3 border border-white/8 rounded-xl overflow-hidden">
         <div className="px-5 py-3 border-b border-white/6">
-          <p className="text-[10px] font-mono text-white/30 uppercase tracking-wider">
+          <p className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
             Account details
           </p>
         </div>
@@ -158,9 +158,7 @@ export default function ProfilePage() {
           <InfoRow label="Status" value={me?.status ?? "—"} />
           <InfoRow
             label="Member since"
-            value={
-              me?.createdAt ? formatDateLong(me.createdAt) : "—"
-            }
+            value={me?.createdAt ? formatDateLong(me.createdAt) : "—"}
           />
         </div>
       </div>

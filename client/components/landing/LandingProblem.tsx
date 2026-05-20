@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { PROBLEM_STATS } from "@/lib/data/landing";
 import Reveal from "./Reveal";
@@ -45,7 +45,7 @@ export default function LandingProblem() {
               <div className="text-[3rem] sm:text-[3.6rem] font-bold tracking-tight text-slate-900 leading-none mb-3">
                 {s.n}
               </div>
-              <div className="text-slate-400 text-[13px] leading-snug whitespace-pre-line">
+              <div className="text-slate-400 text-[14px] leading-snug whitespace-pre-line">
                 {s.label}
               </div>
             </Reveal>

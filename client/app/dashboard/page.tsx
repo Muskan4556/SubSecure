@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -70,14 +70,14 @@ export default function DashboardPage() {
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1.5">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1.5">
             Overview
           </p>
-          <h1 className="text-[1.4rem] font-bold tracking-tight text-white/90 leading-tight">
+          <h1 className="text-[1.15rem] sm:text-[1.4rem] font-bold tracking-tight text-white/90 leading-tight">
             {greeting()}
             {user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
           </h1>
-          <p className="text-[12px] text-white/30 font-mono mt-1">
+          <p className="text-[13px] text-white/30 font-mono mt-1">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
               month: "long",
@@ -88,7 +88,7 @@ export default function DashboardPage() {
         {user?.role === "USER" && (
           <Link
             href="/dashboard/subscriptions/new"
-            className="inline-flex items-center gap-2 text-[12px] font-semibold text-white border border-white/15 hover:border-white/30 hover:bg-white/5 px-4 py-2 rounded-lg transition-all shrink-0"
+            className="inline-flex items-center gap-2 text-[13px] font-semibold text-white border border-white/15 hover:border-white/30 hover:bg-white/5 px-4 py-2 rounded-lg transition-all shrink-0"
           >
             + Add subscription
           </Link>
@@ -99,7 +99,7 @@ export default function DashboardPage() {
       {urgentRenewal && (
         <div className="flex items-center gap-3 bg-amber-400/8 border border-amber-400/20 rounded-xl px-4 py-3">
           <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-          <p className="text-[12px] text-amber-300/80 font-sans">
+          <p className="text-[13px] text-amber-300/80 font-sans">
             <strong className="text-amber-300">{urgentRenewal.name}</strong>{" "}
             renews in{" "}
             <strong className="text-amber-300">
@@ -121,17 +121,17 @@ export default function DashboardPage() {
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-px bg-white/6 rounded-xl overflow-hidden border border-white/6">
         <div className="bg-[#0d1525] px-5 py-4">
-          <div className="text-[9px] font-mono text-white/25 uppercase tracking-wider mb-2">
+          <div className="text-[11px] font-mono text-white/25 uppercase tracking-wider mb-2">
             Monthly Spend
           </div>
           {statsLoading ? (
             <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
           ) : (
             <>
-              <div className="text-[1.5rem] font-bold leading-none tracking-tight mb-1.5 text-white/90">
+              <div className="text-[1.25rem] sm:text-[1.5rem] font-bold leading-none tracking-tight mb-1.5 text-white/90">
                 {formatAmount(stats?.totalMonthlySpend ?? 0)}
               </div>
-              <div className="text-[10px] font-mono text-white/25">
+              <div className="text-[11px] font-mono text-white/25">
                 across active plans
               </div>
             </>
@@ -139,17 +139,17 @@ export default function DashboardPage() {
         </div>
 
         <div className="bg-[#0d1525] px-5 py-4">
-          <div className="text-[9px] font-mono text-white/25 uppercase tracking-wider mb-2">
+          <div className="text-[11px] font-mono text-white/25 uppercase tracking-wider mb-2">
             Active
           </div>
           {statsLoading ? (
             <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
           ) : (
             <>
-              <div className="text-[1.5rem] font-bold leading-none tracking-tight mb-1.5 text-emerald-400">
+              <div className="text-[1.25rem] sm:text-[1.5rem] font-bold leading-none tracking-tight mb-1.5 text-emerald-400">
                 {stats?.totalActive ?? 0}
               </div>
-              <div className="text-[10px] font-mono text-white/25">
+              <div className="text-[11px] font-mono text-white/25">
                 subscriptions
               </div>
             </>
@@ -157,17 +157,17 @@ export default function DashboardPage() {
         </div>
 
         <div className="bg-[#0d1525] px-5 py-4 col-span-2 lg:col-span-1">
-          <div className="text-[9px] font-mono text-white/25 uppercase tracking-wider mb-2">
+          <div className="text-[11px] font-mono text-white/25 uppercase tracking-wider mb-2">
             Cancelled
           </div>
           {statsLoading ? (
             <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
           ) : (
             <>
-              <div className="text-[1.5rem] font-bold leading-none tracking-tight mb-1.5 text-white/40">
+              <div className="text-[1.25rem] sm:text-[1.5rem] font-bold leading-none tracking-tight mb-1.5 text-white/40">
                 {stats?.totalCancelled ?? 0}
               </div>
-              <div className="text-[10px] font-mono text-white/25">
+              <div className="text-[11px] font-mono text-white/25">
                 historical
               </div>
             </>
@@ -179,7 +179,7 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-[1fr_1.1fr] gap-6">
         {/* Quick navigation */}
         <div>
-          <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.15em] mb-3">
+          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-3">
             Quick access
           </p>
           <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
@@ -194,16 +194,16 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[12px] font-medium text-white/75 group-hover:text-white/90 transition-colors">
+                    <span className="text-[13px] font-medium text-white/75 group-hover:text-white/90 transition-colors">
                       {label}
                     </span>
                     {alert && (
-                      <span className="text-[8px] font-mono bg-amber-400/15 text-amber-400 px-1.5 py-px rounded-full">
+                      <span className="text-[10px] font-mono bg-amber-400/15 text-amber-400 px-1.5 py-px rounded-full">
                         due soon
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] font-mono text-white/25 mt-0.5 truncate">
+                  <div className="text-[11px] font-mono text-white/25 mt-0.5 truncate">
                     {sub}
                   </div>
                 </div>
@@ -216,12 +216,12 @@ export default function DashboardPage() {
         {/* Recent active subscriptions */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[9px] font-mono text-white/25 uppercase tracking-[0.15em]">
+            <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em]">
               Active subscriptions
             </p>
             <Link
               href="/dashboard/subscriptions"
-              className="text-[9px] font-mono text-white/20 hover:text-white/50 transition-colors"
+              className="text-[11px] font-mono text-white/20 hover:text-white/50 transition-colors"
             >
               View all →
             </Link>
@@ -229,13 +229,13 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
             {recentSubs.length === 0 ? (
               <div className="bg-[#0d1525] px-5 py-6 text-center">
-                <p className="text-[11px] font-mono text-white/25">
+                <p className="text-[12px] font-mono text-white/25">
                   No active subscriptions
                 </p>
                 {user?.role === "USER" && (
                   <Link
                     href="/dashboard/subscriptions/new"
-                    className="text-[11px] font-mono text-blue-400/60 hover:text-blue-400 mt-1 block transition-colors"
+                    className="text-[12px] font-mono text-blue-400/60 hover:text-blue-400 mt-1 block transition-colors"
                   >
                     Add your first →
                   </Link>
@@ -249,24 +249,23 @@ export default function DashboardPage() {
                   className="flex items-center gap-3 bg-[#0d1525] hover:bg-white/4 px-5 py-3.5 group transition-colors"
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-[12px] font-medium text-white/75 group-hover:text-white/90 truncate transition-colors">
+                    <div className="text-[13px] font-medium text-white/75 group-hover:text-white/90 truncate transition-colors">
                       {sub.name}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       {sub.category && (
-                        <span className="text-[9px] font-mono text-white/25">
+                        <span className="text-[11px] font-mono text-white/25">
                           {sub.category}
                         </span>
                       )}
-                      <span className="text-[9px] font-mono text-white/20">
-                        renews{" "}
-                        {formatDateShort(sub.renewalDate)}
+                      <span className="text-[11px] font-mono text-white/20">
+                        renews {formatDateShort(sub.renewalDate)}
                       </span>
                     </div>
                   </div>
-                  <div className="text-[12px] font-mono text-white/60 shrink-0">
+                  <div className="text-[13px] font-mono text-white/60 shrink-0">
                     {formatAmount(sub.amount)}
-                    <span className="text-[9px] text-white/25">
+                    <span className="text-[11px] text-white/25">
                       /{sub.billingCycle === "MONTHLY" ? "mo" : "yr"}
                     </span>
                   </div>

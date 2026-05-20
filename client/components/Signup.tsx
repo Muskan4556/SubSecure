@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -47,7 +47,10 @@ const fadeUp = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: {
+      duration: 0.45,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
   },
 };
 
@@ -102,7 +105,9 @@ function PasswordStrength({
               ) : (
                 <X className="w-2.5 h-2.5 text-white/15 shrink-0" />
               )}
-              <span className={`text-[10px] font-mono ${ok ? "text-white/40" : "text-white/20"}`}>
+              <span
+                className={`text-[11px] font-mono ${ok ? "text-white/40" : "text-white/20"}`}
+              >
                 {r.label}
               </span>
             </div>
@@ -144,7 +149,6 @@ export default function Signup() {
     }
   };
 
-
   return (
     <motion.div
       className="w-full max-w-sm space-y-6"
@@ -184,7 +188,7 @@ export default function Signup() {
           <div className="space-y-1.5">
             <label
               htmlFor="name"
-              className="block text-[10px] font-mono uppercase tracking-[0.14em] text-white/35"
+              className="block text-[11px] font-mono uppercase tracking-[0.14em] text-white/35"
             >
               Full name
             </label>
@@ -195,10 +199,10 @@ export default function Signup() {
               autoComplete="name"
               aria-invalid={!!errors.name}
               {...register("name")}
-              className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 text-[13px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
+              className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 text-[14px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
             />
             {errors.name && (
-              <p className="text-[11px] text-red-400/80 font-mono">
+              <p className="text-[12px] text-red-400/80 font-mono">
                 {errors.name.message}
               </p>
             )}
@@ -208,7 +212,7 @@ export default function Signup() {
           <div className="space-y-1.5">
             <label
               htmlFor="email"
-              className="block text-[10px] font-mono uppercase tracking-[0.14em] text-white/35"
+              className="block text-[11px] font-mono uppercase tracking-[0.14em] text-white/35"
             >
               Email
             </label>
@@ -219,10 +223,10 @@ export default function Signup() {
               autoComplete="email"
               aria-invalid={!!errors.email}
               {...register("email")}
-              className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 text-[13px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
+              className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 text-[14px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
             />
             {errors.email && (
-              <p className="text-[11px] text-red-400/80 font-mono">
+              <p className="text-[12px] text-red-400/80 font-mono">
                 {errors.email.message}
               </p>
             )}
@@ -232,7 +236,7 @@ export default function Signup() {
           <div className="space-y-1.5">
             <label
               htmlFor="password"
-              className="block text-[10px] font-mono uppercase tracking-[0.14em] text-white/35"
+              className="block text-[11px] font-mono uppercase tracking-[0.14em] text-white/35"
             >
               Password
             </label>
@@ -246,7 +250,7 @@ export default function Signup() {
                 {...register("password")}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
-                className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 pr-10 text-[13px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
+                className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 pr-10 text-[14px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
               />
               <button
                 type="button"
@@ -266,7 +270,7 @@ export default function Signup() {
             <PasswordStrength control={control} visible={passwordFocused} />
 
             {errors.password && !passwordFocused && (
-              <p className="text-[11px] text-red-400/80 font-mono">
+              <p className="text-[12px] text-red-400/80 font-mono">
                 {errors.password.message}
               </p>
             )}
@@ -276,7 +280,7 @@ export default function Signup() {
           <div className="space-y-1.5">
             <label
               htmlFor="confirmPassword"
-              className="block text-[10px] font-mono uppercase tracking-[0.14em] text-white/35"
+              className="block text-[11px] font-mono uppercase tracking-[0.14em] text-white/35"
             >
               Confirm password
             </label>
@@ -288,7 +292,7 @@ export default function Signup() {
                 autoComplete="new-password"
                 aria-invalid={!!errors.confirmPassword}
                 {...register("confirmPassword")}
-                className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 pr-10 text-[13px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
+                className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 pr-10 text-[14px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
               />
               <button
                 type="button"
@@ -304,7 +308,7 @@ export default function Signup() {
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-[11px] text-red-400/80 font-mono">
+              <p className="text-[12px] text-red-400/80 font-mono">
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -314,7 +318,7 @@ export default function Signup() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-2 bg-emerald-500/90 hover:bg-emerald-500 disabled:opacity-50 text-white text-[13px] font-semibold py-2.5 rounded-lg transition-colors cursor-pointer mt-2"
+            className="w-full flex items-center justify-center gap-2 bg-emerald-500/90 hover:bg-emerald-500 disabled:opacity-50 text-white text-[14px] font-semibold py-2.5 rounded-lg transition-colors cursor-pointer mt-2"
           >
             {isSubmitting ? (
               <>
@@ -350,7 +354,7 @@ export default function Signup() {
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-white/6 flex items-center justify-center">
-          <p className="text-[11px] font-mono text-white/25">
+          <p className="text-[12px] font-mono text-white/25">
             Already have an account?{" "}
             <Link
               href="/login"
@@ -365,7 +369,7 @@ export default function Signup() {
       {/* Legal */}
       <motion.p
         variants={fadeUp}
-        className="text-center text-[10px] font-mono text-white/20 px-2"
+        className="text-center text-[11px] font-mono text-white/20 px-2"
       >
         By creating an account you agree to our{" "}
         <Link

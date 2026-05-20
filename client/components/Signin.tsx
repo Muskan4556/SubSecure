@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -84,7 +84,7 @@ export default function Login() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="px-6 py-5 space-y-4">
           {/* Email */}
           <div className="space-y-1.5">
-            <label htmlFor="email" className="block text-[10px] font-mono uppercase tracking-[0.14em] text-white/35">
+            <label htmlFor="email" className="block text-[11px] font-mono uppercase tracking-[0.14em] text-white/35">
               Email
             </label>
             <input
@@ -94,22 +94,22 @@ export default function Login() {
               autoComplete="email"
               aria-invalid={!!errors.email}
               {...register("email")}
-              className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 text-[13px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
+              className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 text-[14px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
             />
             {errors.email && (
-              <p className="text-[11px] text-red-400/80 font-mono">{errors.email.message}</p>
+              <p className="text-[12px] text-red-400/80 font-mono">{errors.email.message}</p>
             )}
           </div>
 
           {/* Password */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block text-[10px] font-mono uppercase tracking-[0.14em] text-white/35">
+              <label htmlFor="password" className="block text-[11px] font-mono uppercase tracking-[0.14em] text-white/35">
                 Password
               </label>
               <Link
                 href="/forgot-password"
-                className="text-[10px] font-mono text-emerald-500/60 hover:text-emerald-400 transition-colors"
+                className="text-[11px] font-mono text-emerald-500/60 hover:text-emerald-400 transition-colors"
               >
                 Forgot?
               </Link>
@@ -122,7 +122,7 @@ export default function Login() {
                 autoComplete="current-password"
                 aria-invalid={!!errors.password}
                 {...register("password")}
-                className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 pr-10 text-[13px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
+                className="w-full bg-white/5 border border-white/8 rounded-lg px-3.5 py-2.5 pr-10 text-[14px] text-white/80 placeholder:text-white/20 font-sans outline-none focus:border-emerald-500/40 focus:bg-white/7 transition-all"
               />
               <button
                 type="button"
@@ -134,7 +134,7 @@ export default function Login() {
               </button>
             </div>
             {errors.password && (
-              <p className="text-[11px] text-red-400/80 font-mono">{errors.password.message}</p>
+              <p className="text-[12px] text-red-400/80 font-mono">{errors.password.message}</p>
             )}
           </div>
 
@@ -142,7 +142,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-2 bg-emerald-500/90 hover:bg-emerald-500 disabled:opacity-50 text-white text-[13px] font-semibold py-2.5 rounded-lg transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 bg-emerald-500/90 hover:bg-emerald-500 disabled:opacity-50 text-white text-[14px] font-semibold py-2.5 rounded-lg transition-colors cursor-pointer"
           >
             {isSubmitting ? (
               <>
@@ -162,7 +162,7 @@ export default function Login() {
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-white/6 flex items-center justify-center">
-          <p className="text-[11px] font-mono text-white/25">
+          <p className="text-[12px] font-mono text-white/25">
             No account?{" "}
             <Link href="/signup" className="text-white/50 hover:text-white/80 transition-colors">
               Sign up →
@@ -172,7 +172,7 @@ export default function Login() {
       </motion.div>
 
       {/* Legal */}
-      <motion.p variants={fadeUp} className="text-center text-[10px] font-mono text-white/20 px-2">
+      <motion.p variants={fadeUp} className="text-center text-[11px] font-mono text-white/20 px-2">
         By signing in you agree to our{" "}
         <Link href="/terms" className="text-white/35 hover:text-white/60 underline underline-offset-4 transition-colors">
           Terms

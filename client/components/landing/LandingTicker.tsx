@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { TICKER_ITEMS } from "@/lib/data/landing";
 
@@ -11,7 +11,7 @@ export default function LandingTicker() {
             {TICKER_ITEMS.map((t) => (
               <span
                 key={t}
-                className="inline-flex items-center gap-4 mx-6 text-[11px] font-mono text-white/25 tracking-widest uppercase"
+                className="inline-flex items-center gap-4 mx-6 text-[12px] font-mono text-white/25 tracking-widest uppercase"
               >
                 <span className="w-1 h-1 rounded-full bg-emerald-500/50 shrink-0" />
                 {t}
