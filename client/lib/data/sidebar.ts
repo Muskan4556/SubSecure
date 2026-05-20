@@ -94,7 +94,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       {
         label: "Users",
-        href: "/dashboard/admin/users",
+        href: "/dashboard/users",
         icon: Users,
         roles: ["ADMIN"],
       },
