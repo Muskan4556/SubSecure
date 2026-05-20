@@ -1,4 +1,18 @@
 import { UserType } from "./user-types";
+import type { Subscription } from "./subscription-types";
+
+export type AdminSubscription = Subscription & {
+  user: { id: string; name: string; email: string };
+};
+
+export type AdminSubscriptionListResponse = {
+  data: AdminSubscription[];
+  stats: {
+    totalMonthlyVolume: number;
+    totalActive: number;
+    totalCancelled: number;
+  };
+};
 
 export type AdminUser = {
   id: string;

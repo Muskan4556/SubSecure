@@ -4,12 +4,14 @@ import type {
   AnalyticsResponse,
   AuditLogListResponse,
   UserListResponse,
+  AdminSubscriptionListResponse,
 } from "@/lib/types/admin-types";
 
 export const adminKeys = {
   auditLogs: (params?: object) => ["admin", "audit-logs", params] as const,
   analytics: () => ["admin", "analytics"] as const,
   users: () => ["admin", "users"] as const,
+  subscriptions: (status?: string) => ["admin", "subscriptions", status] as const,
 };
 
 async function fetchAuditLogs(params?: {
@@ -33,6 +35,15 @@ async function fetchUsers(): Promise<UserListResponse> {
 
 async function suspendUserApi(userId: string) {
   const res = await api.patch(`/api/admin/users/${userId}/suspend`);
+  return res.data;
+}
+
+async function fetchAdminSubscriptions(
+  status?: string,
+): Promise<AdminSubscriptionListResponse> {
+  const res = await api.get("/api/admin/subscriptions", {
+    params: status ? { status } : undefined,
+  });
   return res.data;
 }
 
@@ -63,6 +74,13 @@ export function useAdminUsers() {
   return useQuery({
     queryKey: adminKeys.users(),
     queryFn: fetchUsers,
+  });
+}
+
+export function useAdminAllSubscriptions(status?: string) {
+  return useQuery({
+    queryKey: adminKeys.subscriptions(status),
+    queryFn: () => fetchAdminSubscriptions(status),
   });
 }
 
