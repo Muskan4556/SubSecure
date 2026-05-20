@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { formatDateLong } from "@/lib/utils/format";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
@@ -158,13 +159,7 @@ export default function ProfilePage() {
           <InfoRow
             label="Member since"
             value={
-              me?.createdAt
-                ? new Date(me.createdAt).toLocaleDateString("en-IN", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })
-                : "—"
+              me?.createdAt ? formatDateLong(me.createdAt) : "—"
             }
           />
         </div>

@@ -17,6 +17,7 @@ import {
   useSubscriptions,
 } from "@/apis/subscriptions/subscriptions-api";
 import type { Subscription } from "@/lib/types/subscription-types";
+import { formatAmount, formatDateShort } from "@/lib/utils/format";
 
 function greeting() {
   const h = new Date().getHours();
@@ -28,10 +29,6 @@ function greeting() {
 function daysUntil(date: string) {
   const diff = new Date(date).getTime() - Date.now();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-function formatAmount(amount: string | number) {
-  return `₹${Number(amount).toLocaleString("en-IN", { minimumFractionDigits: 0 })}`;
 }
 
 export default function DashboardPage() {
@@ -263,10 +260,7 @@ export default function DashboardPage() {
                       )}
                       <span className="text-[9px] font-mono text-white/20">
                         renews{" "}
-                        {new Date(sub.renewalDate).toLocaleDateString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                        })}
+                        {formatDateShort(sub.renewalDate)}
                       </span>
                     </div>
                   </div>
