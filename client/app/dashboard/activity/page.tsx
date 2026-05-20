@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Loader2, Activity, Lock } from "lucide-react";
@@ -58,7 +58,7 @@ export default function ActivityPage() {
       </div>
 
       {/* Log list */}
-      <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
+      <div className="rounded-xl overflow-hidden border border-white/6">
         {isLoading ? (
           <div className="bg-[#0d1525] px-5 py-10 flex items-center justify-center">
             <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
@@ -73,7 +73,7 @@ export default function ActivityPage() {
           logs.map((log) => (
             <div
               key={log.id}
-              className="flex items-start gap-3 bg-[#0d1525] px-5 py-3.5"
+              className="flex items-start gap-3 bg-[#0d1525] px-5 py-3.5 border-b border-white/4 last:border-0"
             >
               <Activity className="w-3 h-3 text-white/15 shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">

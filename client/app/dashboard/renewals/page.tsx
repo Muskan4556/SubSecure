@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -7,7 +7,9 @@ import { useUpcomingRenewals } from "@/apis/subscriptions/subscriptions-api";
 import { formatAmount, formatDateShort } from "@/lib/utils/format";
 
 function daysUntil(date: string) {
-  return Math.ceil((new Date(date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  return Math.ceil(
+    (new Date(date).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+  );
 }
 
 const DAY_OPTIONS = [7, 14, 30, 60, 90];
@@ -66,7 +68,7 @@ export default function RenewalsPage() {
           )}
         </div>
       ) : (
-        <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
+        <div className="rounded-xl overflow-hidden border border-white/6">
           {renewals.map((sub) => {
             const d = daysUntil(sub.renewalDate);
             const urgent = d <= 3;
@@ -74,7 +76,7 @@ export default function RenewalsPage() {
               <Link
                 key={sub.id}
                 href={`/dashboard/subscriptions/${sub.id}`}
-                className="flex items-center gap-4 bg-[#0d1525] hover:bg-white/4 px-5 py-3.5 group transition-colors"
+                className="flex items-center gap-4 bg-[#0d1525] hover:bg-white/4 px-5 py-3.5 group transition-colors border-b border-white/4 last:border-0"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
@@ -87,7 +89,9 @@ export default function RenewalsPage() {
                   </div>
                   <div className="flex items-center gap-3 mt-0.5">
                     {sub.category && (
-                      <span className="text-[11px] font-mono text-white/25">{sub.category}</span>
+                      <span className="text-[11px] font-mono text-white/25">
+                        {sub.category}
+                      </span>
                     )}
                     <span className="text-[11px] font-mono text-white/20">
                       {sub.billingCycle === "MONTHLY" ? "Monthly" : "Yearly"}
@@ -98,9 +102,13 @@ export default function RenewalsPage() {
                 <div className="text-right shrink-0">
                   <div className="text-[13px] font-mono text-white/70">
                     {formatAmount(sub.amount)}
-                    <span className="text-[11px] text-white/25">/{sub.billingCycle === "MONTHLY" ? "mo" : "yr"}</span>
+                    <span className="text-[11px] text-white/25">
+                      /{sub.billingCycle === "MONTHLY" ? "mo" : "yr"}
+                    </span>
                   </div>
-                  <div className={`text-[11px] font-mono mt-0.5 ${urgent ? "text-amber-400/80" : "text-white/30"}`}>
+                  <div
+                    className={`text-[11px] font-mono mt-0.5 ${urgent ? "text-amber-400/80" : "text-white/30"}`}
+                  >
                     {d === 0 ? "Today" : d === 1 ? "Tomorrow" : `in ${d} days`}
                     {" · "}
                     {formatDateShort(sub.renewalDate)}
@@ -115,7 +123,8 @@ export default function RenewalsPage() {
       {!isLoading && renewals.length > 0 && (
         <div className="flex items-center gap-1.5 text-[11px] font-mono text-white/20">
           <RotateCw className="w-3 h-3" />
-          {renewals.length} renewal{renewals.length !== 1 ? "s" : ""} within {days} days
+          {renewals.length} renewal{renewals.length !== 1 ? "s" : ""} within{" "}
+          {days} days
         </div>
       )}
     </div>

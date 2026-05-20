@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Loader2, Users } from "lucide-react";
@@ -8,7 +8,7 @@ import {
   useUnsuspendUser,
 } from "@/apis/admin/admin-api";
 import { toast } from "sonner";
-import { UserRow } from "@/components/admin/UserRow";
+import { UserRow, USER_TABLE_COLS } from "@/components/admin/UserRow";
 
 type StatusFilter = "ALL" | "ACTIVE" | "SUSPENDED";
 
@@ -21,6 +21,10 @@ export default function AdminUsersPage() {
   const allUsers = data?.data ?? [];
   const users =
     filter === "ALL" ? allUsers : allUsers.filter((u) => u.status === filter);
+  const activeCount = allUsers.filter((u) => u.status === "ACTIVE").length;
+  const suspendedCount = allUsers.filter(
+    (u) => u.status === "SUSPENDED",
+  ).length;
 
   const isPending = suspending || unsuspending;
 
@@ -39,9 +43,9 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-1">
             Admin
@@ -49,15 +53,39 @@ export default function AdminUsersPage() {
           <h1 className="text-[1.1rem] sm:text-[1.25rem] font-bold tracking-tight text-white/90">
             User Management
           </h1>
+          {!isLoading && (
+            <p className="text-[11px] font-mono text-white/30 mt-1">
+              {allUsers.length} total · {activeCount} active
+              {suspendedCount > 0 && ` · ${suspendedCount} suspended`}
+            </p>
+          )}
         </div>
-        {!isLoading && (
-          <p className="text-[11px] font-mono text-white/25 shrink-0">
-            {allUsers.length} total ·{" "}
-            {allUsers.filter((u) => u.status === "ACTIVE").length} active ·{" "}
-            {allUsers.filter((u) => u.status === "SUSPENDED").length} suspended
-          </p>
-        )}
       </div>
+
+      {/* Stats row */}
+      {!isLoading && allUsers.length > 0 && (
+        <div className="grid grid-cols-3 rounded-xl overflow-hidden border border-white/6">
+          {[
+            { label: "Total Users", value: allUsers.length, green: false },
+            { label: "Active", value: activeCount, green: true },
+            { label: "Suspended", value: suspendedCount, green: false },
+          ].map((s, i) => (
+            <div
+              key={s.label}
+              className={`bg-[#0d1525] px-4 sm:px-5 py-3 ${i < 2 ? "border-r border-white/5" : ""}`}
+            >
+              <div className="text-[10px] font-mono text-white/25 uppercase tracking-wider mb-1">
+                {s.label}
+              </div>
+              <div
+                className={`text-[14px] font-bold leading-none ${s.green ? "text-emerald-400" : "text-white/85"}`}
+              >
+                {s.value}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Filter tabs */}
       <div className="flex gap-1">
@@ -76,8 +104,29 @@ export default function AdminUsersPage() {
         ))}
       </div>
 
-      {/* List */}
-      <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
+      {/* Table */}
+      <div className="rounded-xl overflow-hidden border border-white/6">
+        {/* Column headers — desktop only */}
+        <div
+          className={`hidden md:grid ${USER_TABLE_COLS} px-5 py-2.5 gap-4 sm:gap-6 bg-white/3 border-b border-white/6`}
+        >
+          {[
+            { label: "User", align: "text-left" },
+            { label: "Role", align: "text-left" },
+            { label: "Status", align: "text-right" },
+            { label: "Joined", align: "text-right" },
+            { label: "", align: "" },
+          ].map(({ label, align }) => (
+            <span
+              key={label}
+              className={`text-[10px] font-mono text-white/20 uppercase tracking-wider ${align}`}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+
+        {/* Rows */}
         {isLoading ? (
           <div className="bg-[#0d1525] px-5 py-10 flex items-center justify-center">
             <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
@@ -90,13 +139,14 @@ export default function AdminUsersPage() {
             </p>
           </div>
         ) : (
-          users.map((user) => (
+          users.map((user, i) => (
             <UserRow
               key={user.id}
               user={user}
               onSuspend={handleSuspend}
               onUnsuspend={handleUnsuspend}
               isPending={isPending}
+              index={i}
             />
           ))
         )}
