@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { Subscription, SubscriptionStatus } from "@/lib/types/subscription-types";
-import { formatAmount } from "@/lib/utils/format";
+import { formatAmount, formatDateShort } from "@/lib/utils/format";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,10 +70,7 @@ export function SubscriptionRow({
               className={`text-[9px] font-mono ${daysUntil <= 7 ? "text-amber-400/70" : "text-white/20"}`}
             >
               renews{" "}
-              {new Date(sub.renewalDate).toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-              })}
+              {formatDateShort(sub.renewalDate)}
               {daysUntil <= 7 && ` (${daysUntil}d)`}
             </span>
           )}

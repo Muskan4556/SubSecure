@@ -175,7 +175,7 @@ export default function AppSidebar({
 
       <SidebarInset>
         {/* Top bar */}
-        <header className="flex h-12 shrink-0 items-center gap-3 border-b border-border px-4">
+        <header className="flex h-16 shrink-0 items-center gap-3 border-b border-border px-4">
           <SidebarTrigger className="-ml-1 text-sidebar-foreground/40 hover:text-sidebar-foreground" />
           <div className="h-3.5 w-px bg-border" />
           <ChevronRight className="w-3 h-3 text-white/20" />
