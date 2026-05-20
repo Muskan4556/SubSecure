@@ -3,7 +3,7 @@ export type UserType = {
   email: string;
   name: string;
   role: "ADMIN" | "USER";
-  isActive: boolean;
-  profileImageUrl: string;
-  createdAt: Date;
+  status: "ACTIVE" | "SUSPENDED";
+  createdAt: string;
+  updatedAt: string;
 };

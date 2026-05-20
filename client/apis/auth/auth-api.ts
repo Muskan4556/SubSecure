@@ -1,4 +1,4 @@
-import { LoginRequest } from "@/lib/types/auth-types";
+import { LoginRequest, SignupRequest } from "@/lib/types/auth-types";
 import { api } from "../axios";
 import { useAuth } from "@/context/authContext";
 import { useMutation } from "@tanstack/react-query";
@@ -17,14 +17,33 @@ export function useLogin() {
     mutationFn: loginApi,
     onSuccess: (data) => {
       const { accessToken, user } = data;
+      // Store token for interceptor
+      setAccessToken(accessToken);
+      // Update React auth state
+      setAuth(accessToken, user);
+    },
+  });
+}
+
+async function signupApi(data: SignupRequest) {
+  const res = await api.post("/api/auth/signup", data);
+  return res.data;
+}
+
+export function useSignup() {
+  const { setAuth } = useAuth();
+
+  return useMutation({
+    mutationFn: signupApi,
+    onSuccess: (data) => {
+      const { accessToken, user } = data;
       setAccessToken(accessToken);
       setAuth(accessToken, user);
     },
   });
 }
 
-
-async function logoutApi(){
+async function logoutApi() {
   await api.post("/api/auth/logout");
 }
 
