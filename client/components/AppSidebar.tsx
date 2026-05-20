@@ -56,7 +56,9 @@ function AppSidebarInner() {
                   <Shield className="size-3.5 text-white" />
                 </div>
                 <div className="leading-tight">
-                  <span className="text-[13px] font-semibold tracking-tight">SubSecure</span>
+                  <span className="text-[13px] font-semibold tracking-tight">
+                    SubSecure
+                  </span>
                   <p className="text-[10px] font-mono text-sidebar-foreground/40">
                     Subscription Management
                   </p>
@@ -69,34 +71,45 @@ function AppSidebarInner() {
 
       {/* Nav Groups */}
       <SidebarContent>
-        {NAV_GROUPS.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[9px] font-mono uppercase tracking-[0.15em] text-sidebar-foreground/30">
-              {group.label}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map(({ label, href, icon: Icon }) => {
-                  const isActive =
-                    href === "/dashboard"
-                      ? pathname === "/dashboard"
-                      : pathname.startsWith(href);
+        {NAV_GROUPS.map((group) => {
+          const visibleItems = group.items.filter(
+            ({ roles }) => !roles || (user?.role && roles.includes(user.role)),
+          );
+          if (!visibleItems.length) return null;
 
-                  return (
-                    <SidebarMenuItem key={href}>
-                      <SidebarMenuButton asChild isActive={isActive} tooltip={label}>
-                        <Link href={href}>
-                          <Icon className="shrink-0" />
-                          <span className="text-[12px]">{label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+          return (
+            <SidebarGroup key={group.label}>
+              <SidebarGroupLabel className="text-[9px] font-mono uppercase tracking-[0.15em] text-sidebar-foreground/30">
+                {group.label}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {visibleItems.map(({ label, href, icon: Icon }) => {
+                    const isActive =
+                      href === "/dashboard"
+                        ? pathname === "/dashboard"
+                        : pathname.startsWith(href);
+
+                    return (
+                      <SidebarMenuItem key={href}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive}
+                          tooltip={label}
+                        >
+                          <Link href={href}>
+                            <Icon className="shrink-0" />
+                            <span className="text-[12px]">{label}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
 
       {/* Footer */}
@@ -104,7 +117,10 @@ function AppSidebarInner() {
         <SidebarMenu>
           {user && (
             <SidebarMenuItem>
-              <SidebarMenuButton size="lg" className="cursor-default hover:bg-transparent">
+              <SidebarMenuButton
+                size="lg"
+                className="cursor-default hover:bg-transparent"
+              >
                 <UserAvatar name={user.name} />
                 <div className="flex-1 leading-tight overflow-hidden">
                   <div className="flex items-center gap-1.5">
@@ -135,7 +151,9 @@ function AppSidebarInner() {
               className="text-sidebar-foreground/40 hover:text-red-400 hover:bg-red-500/8 cursor-pointer transition-colors"
             >
               <LogOut className="shrink-0" />
-              <span className="text-[12px]">{isPending ? "Signing out…" : "Sign out"}</span>
+              <span className="text-[12px]">
+                {isPending ? "Signing out…" : "Sign out"}
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
