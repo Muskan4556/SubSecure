@@ -6,6 +6,7 @@ import {
   getAuditLogs,
   getAnalytics,
   getUsers,
+  getAllSubscriptions,
   suspendUser,
   unsuspendUser,
 } from "../controllers/admin";
@@ -17,6 +18,7 @@ router.use(requireAuth, requireRole(Role.ADMIN));
 router.get("/audit-logs", getAuditLogs);
 router.get("/analytics", getAnalytics);
 router.get("/users", getUsers);
+router.get("/subscriptions", getAllSubscriptions);
 router.patch("/users/:id/suspend", suspendUser);
 router.patch("/users/:id/unsuspend", unsuspendUser);
 
