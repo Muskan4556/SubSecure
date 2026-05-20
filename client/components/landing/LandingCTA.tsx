@@ -22,7 +22,7 @@ export default function LandingCTA() {
 
             <div className="flex flex-col gap-3 shrink-0">
               <Link
-                href="/login"
+                href="/signup"
                 className="inline-flex items-center gap-2 text-[14px] font-semibold text-white border border-white/20 hover:border-white/40 hover:bg-white/5 px-7 py-3.5 rounded-xl transition-all"
               >
                 Track my subscriptions <ArrowUpRight className="w-4 h-4" />

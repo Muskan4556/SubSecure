@@ -34,7 +34,7 @@ export default function LandingNav() {
             Sign in
           </Link>
           <Link
-            href="/login"
+            href="/signup"
             className="text-[12px] font-medium border border-white/15 hover:border-white/30 text-white/70 hover:text-white px-3.5 py-1.5 rounded-lg transition-all"
           >
             Get started →

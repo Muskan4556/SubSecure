@@ -57,7 +57,7 @@ export default function LandingHero() {
           </p>
           <div className="flex items-center gap-6 shrink-0">
             <Link
-              href="/login"
+              href="/signup"
               className="group inline-flex items-center gap-2 text-[14px] font-medium text-white hover:text-emerald-300 transition-colors"
             >
               Track my subscriptions
