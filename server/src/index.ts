@@ -9,10 +9,12 @@ import subscriptionRoute from "./routes/subscriptionsRoute";
 import adminRoute from "./routes/adminRoute";
 import userRoute from "./routes/users";
 import { generalRateLimiter } from "./middlewares/rateLimiter";
+import { startRecurringBillingJob } from "./jobs/processRecurringBilling";
+import { startRenewalReminderJob } from "./jobs/sendRenewalReminders";
 
 const app = express();
 
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(express.json());
@@ -45,4 +47,6 @@ const PORT = Number(process.env.PORT) || 4000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
+  startRecurringBillingJob();
+  startRenewalReminderJob();
 });
