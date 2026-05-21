@@ -12,15 +12,15 @@ import {
 // Ticker items
 export const TICKER_ITEMS = [
   "ROLE-BASED ACCESS CONTROL",
-  "IMMUTABLE AUDIT TRAILS",
-  "IDEMPOTENT API OPERATIONS",
+  "AUDIT LOG VISIBILITY",
+  "DUPLICATE SUBSCRIPTION GUARD",
   "BCRYPT PASSWORD HASHING",
   "HTTPONLY REFRESH COOKIES",
   "JWT ACCESS TOKENS",
-  "DUPLICATE BILLING GUARD",
+  "SILENT TOKEN REFRESH",
   "ZOD SCHEMA VALIDATION",
-  "SERVER-SIDE VALIDATION",
-  "ZERO-TRUST API DESIGN",
+  "PASSWORD STRENGTH ENFORCEMENT",
+  "OWNERSHIP CHECK MIDDLEWARE",
   "EXPRESS RATE LIMITING",
 ] as const;
 
@@ -89,7 +89,7 @@ export type SidebarNavItem = {
 
 export const DASHBOARD_SIDEBAR_NAV: SidebarNavItem[] = [
   { icon: CreditCard, label: "Subscriptions", active: true },
-  { icon: Activity, label: "Audit Log", badge: "12" },
+  { icon: Activity, label: "Activity Logs", badge: "12" },
   { icon: Bell, label: "Renewals", badge: "2" },
   { icon: FileText, label: "Billing History" },
   { icon: Users, label: "Analytics" },
@@ -100,14 +100,17 @@ export type ProblemStat = { n: string; label: string };
 
 export const PROBLEM_STATS: ProblemStat[] = [
   {
-    n: "~$32",
-    label: "Average monthly waste per person\nfrom forgotten subscriptions",
+    n: "$219",
+    label: "Average monthly subscription spend\nreported by consumers",
   },
   {
     n: "67%",
-    label: "Of employees use SaaS tools\nwithout IT billing visibility",
+    label: "Of Fortune 1000 employees use SaaS apps\nwithout IT approval",
   },
-  { n: "3×", label: "Cost reduction from\na single recurring spend audit" },
+  {
+    n: "~30%",
+    label: "Of SaaS spend can sit unused\nthrough overlap and underuse",
+  },
 ];
 
 // Security section data
@@ -118,7 +121,7 @@ export const SECURITY_TECHNIQUES: SecurityTechnique[] = [
   { label: "JWT · 15m access tokens" },
   { label: "httpOnly refresh cookies" },
   { label: "Express rate limiting" },
-  { label: "Idempotent writes" },
+  { label: "Duplicate subscription guard" },
   { label: "Zod server-side validation" },
 ];
 
@@ -133,22 +136,22 @@ export const THREAT_MODEL: ThreatRow[] = [
   {
     n: "02",
     threat: "Payment Data Leakage",
-    fix: "HTTPS-only transport, all endpoints behind authenticated middleware, no raw credentials stored.",
+    fix: "Authenticated API access, httpOnly refresh cookies, and no payment card data stored in the app.",
   },
   {
     n: "03",
     threat: "Unauthorized Manipulation",
-    fix: "Server-enforced RBAC on every route, Zod input validation, audit log on every state change.",
+    fix: "Server-enforced RBAC, ownership checks, Zod input validation, and audit logs for key actions.",
   },
   {
     n: "04",
     threat: "Replay / Duplicate Requests",
-    fix: "Duplicate subscription guard runs inside a DB transaction before any write is committed.",
+    fix: "Duplicate subscription guard performs case-insensitive validation before any write is committed to the database",
   },
   {
     n: "05",
     threat: "Insider Misuse",
-    fix: "Immutable audit trail with before/after diffs, actor identity on every event, admin/user role separation.",
+    fix: "Audit logs capture actor, action, entity, IP address, and timestamp with admin/user role separation.",
   },
 ];
 
@@ -169,7 +172,7 @@ export const FEATURES: Feature[] = [
   {
     icon: Activity,
     name: "Immutable Audit Logs",
-    desc: "Create, update, cancel, delete — every action is permanently logged with actor identity and a full before/after diff.",
+    desc: "Important auth, admin, subscription, billing, and renewal actions are logged with actor identity and timestamps.",
   },
   {
     icon: XCircle,
@@ -179,7 +182,7 @@ export const FEATURES: Feature[] = [
   {
     icon: Bell,
     name: "Renewal Visibility",
-    desc: "See everything renewing in the next 30 days. No more opening your bank statement to find a surprise charge.",
+    desc: "See upcoming renewals before they hit your bill. No more opening your bank statement to find a surprise charge.",
   },
   {
     icon: Users,
