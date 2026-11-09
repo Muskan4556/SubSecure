@@ -7,3 +7,5 @@ export { getSubscriptionStats } from "./getSubscriptionStats";
 export { getUpcomingRenewals } from "./getUpcomingRenewals";
 export { getBillingHistory } from "./getBillingHistory";
 export { getAllMyBillingHistory } from "./getAllMyBillingHistory";
+export { categorizeBackfill } from "./categorizeBackfill";
+export { getSpendByCategory } from "./getSpendByCategory";

@@ -12,7 +12,7 @@ export const getSubscriptions = async (req: Request, res: Response) => {
     });
   }
 
-  const { status } = parsedQuery.data;
+  const { status, category } = parsedQuery.data;
   const isAdmin = req.userRole === Role.ADMIN;
 
   try {
@@ -24,6 +24,10 @@ export const getSubscriptions = async (req: Request, res: Response) => {
 
     if (status) {
       where.status = status;
+    }
+
+    if (category) {
+      where.category = category;
     }
 
     const subscriptions = await prisma.subscription.findMany({

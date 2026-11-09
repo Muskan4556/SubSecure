@@ -11,11 +11,15 @@ import {
   getUpcomingRenewals,
   getBillingHistory,
   getAllMyBillingHistory,
+  categorizeBackfill,
+  getSpendByCategory,
 } from "../controllers/subscriptions";
 
 const router = Router();
 
 router.get("/stats", requireAuth, getSubscriptionStats);
+router.get("/stats/by-category", requireAuth, getSpendByCategory);
+router.post("/categorize/backfill", requireAuth, categorizeBackfill);
 router.get("/renewals", requireAuth, getUpcomingRenewals);
 router.get("/billing-history", requireAuth, getAllMyBillingHistory);
 

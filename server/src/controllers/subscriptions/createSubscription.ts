@@ -4,8 +4,11 @@ import prisma from "../../lib/prisma";
 import {
   BillingCycle,
   BillingStatus,
+  CategorySource,
+  SubscriptionCategory,
   SubscriptionStatus,
 } from "@prisma/client";
+import { detectCategory } from "../../lib/categorization/rules";
 
 export function advanceByOneCycle(date: Date, cycle: BillingCycle): void {
   if (cycle === BillingCycle.MONTHLY) {
@@ -61,7 +64,8 @@ export const createSubscription = async (req: Request, res: Response) => {
       const subscription = await tx.subscription.create({
         data: {
           name,
-          category: category ?? null,
+          category: category ?? detectCategory(name),
+          categorySource: category ? CategorySource.USER : CategorySource.RULE,
           amount,
           billingCycle,
           renewalDate,

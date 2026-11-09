@@ -4,7 +4,7 @@ import {
   updateSubscriptionSchema,
 } from "../../validations/subscriptionValidation";
 import prisma from "../../lib/prisma";
-import { SubscriptionStatus } from "@prisma/client";
+import { CategorySource, SubscriptionCategory, SubscriptionStatus } from "@prisma/client";
 
 export const updateSubscription = async (req: Request, res: Response) => {
   const parsedId = subscriptionIdSchema.safeParse({ id: req.params.id });
@@ -44,7 +44,10 @@ export const updateSubscription = async (req: Request, res: Response) => {
         where: { id },
         data: {
           ...(name !== undefined && { name }),
-          ...(category !== undefined && { category }),
+          ...(category !== undefined && {
+            category,
+            categorySource: CategorySource.USER,
+          }),
           ...(amount !== undefined && { amount }),
           ...(billingCycle !== undefined && { billingCycle }),
           ...(renewalDate !== undefined && { renewalDate }),
