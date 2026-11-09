@@ -2,11 +2,28 @@ export type BillingCycle = "MONTHLY" | "YEARLY";
 export type SubscriptionStatus = "ACTIVE" | "CANCELLED";
 export type BillingStatus = "PAID" | "PENDING" | "FAILED";
 
+export type SubscriptionCategory =
+  | "ENTERTAINMENT"
+  | "MUSIC"
+  | "PRODUCTIVITY"
+  | "CLOUD_STORAGE"
+  | "DEVELOPMENT"
+  | "EDUCATION"
+  | "HEALTH_FITNESS"
+  | "NEWS_READING"
+  | "GAMING"
+  | "UTILITIES"
+  | "FINANCE"
+  | "OTHER";
+
+export type CategorySource = "RULE" | "USER";
+
 export type Subscription = {
   id: string;
   userId: string;
   name: string;
-  category: string | null;
+  category: SubscriptionCategory;
+  categorySource: CategorySource;
   amount: string; // Decimal from Prisma serialises as string in JSON
   billingCycle: BillingCycle;
   renewalDate: string;
@@ -37,7 +54,7 @@ export type BillingHistoryWithSubscription = BillingHistory & {
 
 export type CreateSubscriptionRequest = {
   name: string;
-  category?: string;
+  category?: SubscriptionCategory;
   amount: number;
   billingCycle: BillingCycle;
   startDate: string; // ISO date string 
