@@ -25,18 +25,24 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+function toTitleCase(str: string): string {
+  return str
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
 function InsightsSkeleton() {
   return (
     <div className="px-5 py-4 space-y-3">
       <Skeleton className="h-4 w-56 bg-white/5" />
       <div className="pt-1 space-y-2">
-        <Skeleton className="h-3 w-full bg-white/5" />
+        <Skeleton className="h-4 w-full bg-white/5" />
         <Skeleton className="h-3 w-5/6 bg-white/5" />
-        <Skeleton className="h-3 w-4/5 bg-white/5" />
       </div>
       <div className="pt-1 space-y-2">
-        <Skeleton className="h-9 w-full bg-white/5" />
-        <Skeleton className="h-9 w-full bg-white/5" />
+        <Skeleton className="h-4 w-4/5 bg-white/5" />
+        <Skeleton className="h-3 w-3/4 bg-white/5" />
       </div>
     </div>
   );
@@ -113,9 +119,8 @@ export function InsightsCard() {
   }
 
   const isRefreshDisabled = isRefreshing || isLoading || insight?.refreshesLeft === 0;
-  const hasTips = (insight?.tips?.length ?? 0) > 0;
-  const hasPoints = (insight?.points?.length ?? 0) > 0;
-  const isEmpty = !insight?.aiGenerated && !hasPoints && !hasTips;
+  const hasInsights = (insight?.insights?.length ?? 0) > 0;
+  const isEmpty = !insight?.aiGenerated && !hasInsights;
 
   return (
     <div className="bg-white/3 border border-white/8 rounded-xl overflow-hidden">
@@ -218,64 +223,51 @@ export function InsightsCard() {
             </p>
           </div>
 
-          {/* ── 2. KEY POINTS ── */}
-          {hasPoints && (
-            <div className="px-5 py-3.5">
-              <p className="text-[10px] font-mono text-white/30 uppercase tracking-wider mb-2.5">
-                Key Points
-              </p>
-              <ul className="space-y-2">
-                {insight.points.map((pt, i) => (
-                  <li key={i} className="flex items-start gap-2.5">
-                    <span className="text-blue-400/60 shrink-0 mt-0.5 text-[10px]">▪</span>
-                    <span className="text-[12.5px] text-white/75 leading-snug font-sans">{pt}</span>
-                  </li>
-                ))}
-              </ul>
+          {/* ── 2. Unified Insights list (max 4 items) ── */}
+          {hasInsights && (
+            <div className="divide-y divide-white/5">
+              {insight.insights.slice(0, 4).map((item, idx) => {
+                const subIds = item.subscriptionIds ?? [];
+                const hasLink = subIds.length > 0;
+                const href =
+                  subIds.length === 1
+                    ? `/dashboard/subscriptions/${subIds[0]}`
+                    : `/dashboard/subscriptions`;
+
+                const rowContent = (
+                  <div className="px-5 py-3.5 hover:bg-white/2 transition-colors flex items-start justify-between gap-3 group">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-bold text-white/90 leading-snug">
+                        {item.title}
+                      </p>
+                      <p className="text-[12.5px] text-white/65 leading-relaxed mt-1 font-sans">
+                        {item.detail}
+                      </p>
+                      {item.savings && (
+                        <p className="text-[11px] font-mono text-emerald-400 font-medium mt-1.5 flex items-center gap-1.5">
+                          <TrendingDown className="w-3.5 h-3.5 shrink-0" />
+                          {formatSavingsText(item.savings)}
+                        </p>
+                      )}
+                    </div>
+                    {hasLink && (
+                      <ArrowRight className="w-3.5 h-3.5 text-white/20 group-hover:text-white/60 shrink-0 mt-1 transition-colors" />
+                    )}
+                  </div>
+                );
+
+                return hasLink ? (
+                  <Link key={item.signalId ?? idx} href={href} className="block">
+                    {rowContent}
+                  </Link>
+                ) : (
+                  <div key={idx}>{rowContent}</div>
+                );
+              })}
             </div>
           )}
 
-          {/* ── 3. WORTH A LOOK (tips) ── */}
-          {hasTips && (
-            <div className="px-5 py-3.5">
-              <p className="text-[10px] font-mono text-white/30 uppercase tracking-wider mb-2.5">
-                Worth a Look
-              </p>
-              <div className="space-y-2">
-                {insight.tips.slice(0, 3).map((tip, idx) => {
-                  const subIds = tip.subscriptionIds ?? [];
-                  const href =
-                    subIds.length === 1
-                      ? `/dashboard/subscriptions/${subIds[0]}`
-                      : `/dashboard/subscriptions`;
-                  return (
-                    <Link
-                      key={tip.signalId || idx}
-                      href={href}
-                      className="flex items-center justify-between gap-3 bg-white/4 hover:bg-white/8 rounded-lg px-3.5 py-2.5 group transition-colors border border-white/5"
-                    >
-                      <div className="flex items-start gap-2.5 min-w-0">
-                        <TrendingDown className="w-3.5 h-3.5 text-blue-400/70 shrink-0 mt-0.5" />
-                        <div className="min-w-0">
-                          <p className="text-[12px] text-white/80 group-hover:text-white/95 transition-colors leading-snug">
-                            {tip.reason}
-                          </p>
-                          {tip.savings && (
-                            <p className="text-[11px] font-mono text-emerald-400/90 mt-0.5">
-                              {formatSavingsText(tip.savings)}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-white/20 group-hover:text-white/60 shrink-0 transition-colors" />
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* ── 4. WHAT IF SIMULATOR (collapsed by default) ── */}
+          {/* ── 3. WHAT IF SIMULATOR (collapsed by default) ── */}
           <div>
             <button
               type="button"
@@ -351,7 +343,7 @@ export function InsightsCard() {
                           </span>
                           <span>{sub.name}</span>
                           <span className="text-white/40">
-                            ₹{Math.round(mo).toLocaleString("en-IN")}/mo
+                            {toTitleCase(sub.category)} · ₹{Math.round(mo).toLocaleString("en-IN")}/mo
                           </span>
                         </button>
                       );

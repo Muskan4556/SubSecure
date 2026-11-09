@@ -5,9 +5,10 @@ export type SignalSavings = {
   yearlyMax: number;
 };
 
-export type InsightTip = {
-  signalId: string;
-  reason: string;
+export type InsightItem = {
+  signalId: string | null;
+  title: string;
+  detail: string;
   subscriptionIds: string[];
   savings: SignalSavings | null;
 };
@@ -15,9 +16,8 @@ export type InsightTip = {
 export type InsightResponse = {
   /** Code-built headline e.g. "₹2,322/mo · ₹27,860/yr · 5 subscriptions" */
   statLine: string;
-  /** AI or rule-based scannable bullet points (3-4 items) */
-  points: string[];
-  tips: InsightTip[];
+  /** Single list of 3-4 insight items */
+  insights: InsightItem[];
   aiGenerated: boolean;
   cached: boolean;
   updatedAt: string;
