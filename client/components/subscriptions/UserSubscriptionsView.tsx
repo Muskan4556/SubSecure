@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Loader2, PlusCircle, AlertCircle } from "lucide-react";
+import { Loader2, PlusCircle, AlertCircle, ChevronDown } from "lucide-react";
 import {
   useCancelSubscription,
   useSubscriptions,
@@ -156,27 +156,30 @@ export function UserSubscriptionsView() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:ml-auto">
           <label className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
             Category:
           </label>
-          <select
-            value={categoryFilter ?? ""}
-            onChange={(e) =>
-              setCategoryFilter(
-                e.target.value ? (e.target.value as SubscriptionCategory) : undefined,
-              )
-            }
-            style={{ colorScheme: "dark" }}
-            className="h-8 rounded-lg border border-white/10 bg-[#0d1525] px-2.5 text-[11px] font-mono text-white/80 focus:outline-none cursor-pointer"
-          >
-            <option value="" className="bg-[#0d1525] text-white">All categories</option>
-            {SUBSCRIPTION_CATEGORIES.map((cat) => (
-              <option key={cat} value={cat} className="bg-[#0d1525] text-white">
-                {cat.replace("_", " ")}
-              </option>
-            ))}
-          </select>
+          <div className="relative inline-flex items-center">
+            <select
+              value={categoryFilter ?? ""}
+              onChange={(e) =>
+                setCategoryFilter(
+                  e.target.value ? (e.target.value as SubscriptionCategory) : undefined,
+                )
+              }
+              style={{ colorScheme: "dark" }}
+              className="appearance-none h-8 rounded-lg border border-white/10 bg-[#0d1525] pl-3 pr-8 text-[11px] font-mono text-white/80 focus:outline-none focus:border-white/20 hover:border-white/20 transition-colors cursor-pointer"
+            >
+              <option value="" className="bg-[#0d1525] text-white">All categories</option>
+              {SUBSCRIPTION_CATEGORIES.map((cat) => (
+                <option key={cat} value={cat} className="bg-[#0d1525] text-white">
+                  {cat.replace(/_/g, " ")}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-white/40 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
         </div>
       </div>
 
