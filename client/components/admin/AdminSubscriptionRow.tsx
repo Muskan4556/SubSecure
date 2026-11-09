@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import type { AdminSubscription } from "@/lib/types/admin-types";
-import type { SubscriptionStatus } from "@/lib/types/subscription-types";
+import type { SubscriptionCategory, SubscriptionStatus } from "@/lib/types/subscription-types";
 import { formatAmount, formatDateShort } from "@/lib/utils/format";
+import { CategoryBadge } from "@/components/subscriptions/CategoryBadge";
 
 export const ADMIN_SUB_TABLE_COLS =
   "grid-cols-[200px_1fr_1fr_100px_80px_100px]";
@@ -89,8 +90,18 @@ export function AdminSubscriptionRow({
           </Link>
         </div>
 
-        {/* Plan */}
-        <span className="text-[12px] font-mono text-white/30 truncate">{plan}</span>
+        {/* Plan (category badge + cycle) */}
+        <div className="flex items-center gap-1.5 min-w-0">
+          {sub.category && (
+            <CategoryBadge
+              category={sub.category as SubscriptionCategory}
+              size="xs"
+            />
+          )}
+          <span className="text-[11px] font-mono text-white/30 truncate">
+            {sub.billingCycle === "MONTHLY" ? "Mo" : "Yr"}
+          </span>
+        </div>
 
         {/* Cost */}
         <span className="text-[13px] font-mono text-white/60 text-right">
@@ -136,7 +147,17 @@ export function AdminSubscriptionRow({
             <span className="text-[11px] font-mono text-blue-400/50 truncate block">
               {sub.user.email}
             </span>
-            <span className="text-[11px] font-mono text-white/25">{plan}</span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              {sub.category && (
+                <CategoryBadge
+                  category={sub.category as SubscriptionCategory}
+                  size="xs"
+                />
+              )}
+              <span className="text-[11px] font-mono text-white/25">
+                {sub.billingCycle === "MONTHLY" ? "Monthly" : "Yearly"}
+              </span>
+            </div>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5 shrink-0">
