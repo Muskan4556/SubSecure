@@ -18,6 +18,12 @@ import { useSubscriptions } from "@/apis/subscriptions/subscriptions-api";
 import type { SignalSavings } from "@/lib/types/ai-types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 function InsightsSkeleton() {
   return (
@@ -114,58 +120,58 @@ export function InsightsCard() {
   return (
     <div className="bg-white/3 border border-white/8 rounded-xl overflow-hidden">
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-white/6">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-3.5 h-3.5 text-blue-400/80" />
-          <span className="text-[11px] font-mono text-white/40 uppercase tracking-wider">
+      <div className="flex flex-wrap sm:flex-nowrap items-center justify-between px-5 py-3 border-b border-white/6 gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <Sparkles className="w-3.5 h-3.5 text-blue-400/80 shrink-0" />
+          <span className="text-[11px] font-mono text-white/40 uppercase tracking-wider whitespace-nowrap">
             AI Spending Insights
           </span>
-          {insight && (
-            <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
-                insight.aiGenerated
-                  ? "bg-blue-500/10 text-blue-400/90 border-blue-500/20"
-                  : "bg-white/6 text-white/40 border-white/10"
-              }`}
-            >
-              {insight.aiGenerated ? "AI" : "rule summary"}
-            </span>
-          )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           {insight?.updatedAt && (
-            <span className="text-[10px] font-mono text-white/30 hidden sm:inline">
+            <span className="text-[10px] font-mono text-white/30 whitespace-nowrap">
               {formatTimeAgo(insight.updatedAt)}
             </span>
           )}
 
-          {insight?.refreshesLeft === 1 && (
-            <span className="text-[10px] font-mono text-white/40 bg-white/4 border border-white/10 px-2 py-0.5 rounded">
-              1 refresh left
+          {insight && typeof insight.refreshesLeft === "number" && insight.refreshesLeft > 0 && (
+            <span className="text-[10px] font-mono text-white/50 bg-[#0e1626] border border-white/10 px-2.5 py-1 rounded-md whitespace-nowrap">
+              {insight.refreshesLeft} {insight.refreshesLeft === 1 ? "refresh" : "refreshes"} left
             </span>
           )}
           {insight?.refreshesLeft === 0 && (
-            <span className="text-[10px] font-mono text-amber-400/80 bg-amber-400/10 border border-amber-400/25 px-2 py-0.5 rounded">
+            <span className="text-[10px] font-mono text-amber-400/80 bg-amber-400/10 border border-amber-400/25 px-2.5 py-1 rounded-md whitespace-nowrap">
               Next refresh tomorrow
             </span>
           )}
 
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshDisabled}
-            title={
-              insight?.refreshesLeft === 0
-                ? "Next refresh tomorrow"
-                : insight?.refreshesLeft === 1
-                ? "1 refresh left today"
-                : "Refresh insights"
-            }
-            className="p-1.5 rounded-md text-white/40 hover:text-white/80 hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-            aria-label="Refresh AI insights"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
-          </button>
+          <TooltipProvider delayDuration={150}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshDisabled}
+                  className="w-7 h-7 rounded-lg bg-[#0e1626] border border-white/10 text-white/50 hover:text-white hover:bg-white/5 hover:border-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center shrink-0 cursor-pointer"
+                  aria-label="Refresh AI insights"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                align="end"
+                sideOffset={8}
+                className="bg-[#0c1424] border border-white/10 text-white text-[11px] px-2.5 py-1 rounded-md shadow-lg z-50 pointer-events-none"
+              >
+                {insight?.refreshesLeft === 0
+                  ? "Next refresh tomorrow"
+                  : isRefreshing
+                  ? "Refreshing..."
+                  : "Refresh insights"}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 

@@ -6,6 +6,8 @@ import type { InsightFactsWithHash, InsightSignal, SignalSavings } from "./facts
 
 const AI_ENABLED = process.env.AI_ENABLED !== "false";
 const DAILY_LIMIT = Number(process.env.AI_DAILY_REQUEST_LIMIT ?? 12);
+const USER_DAILY_LIMIT = Number(process.env.USER_DAILY_REFRESH_LIMIT ?? 2);
+export const MAX_MANUAL_REFRESHES = Math.max(1, USER_DAILY_LIMIT - 1);
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export function todayDateString(): string {
@@ -219,7 +221,11 @@ export async function getInsights(userId: string): Promise<InsightResult> {
   const isToday = cachedContent.date === today;
   const autoGenerationsToday = isToday ? Number(cachedContent.autoGenerationsToday ?? 0) : 0;
   const manualRefreshesToday = isToday ? Number(cachedContent.manualRefreshesToday ?? 0) : 0;
-  const refreshesLeft = Math.max(0, 1 - manualRefreshesToday);
+  
+  const globalCount = await getDailyCount();
+  const refreshesLeft = globalCount >= DAILY_LIMIT
+    ? 0
+    : Math.max(0, MAX_MANUAL_REFRESHES - manualRefreshesToday);
 
   // Return cached result if fresh, dataHash matches, new format, AND it was actually AI-generated
   if (cached && cached.aiGenerated && !isOldFormat(cachedContent)) {
@@ -321,11 +327,15 @@ export async function refreshInsights(userId: string): Promise<InsightResult> {
   const isToday = cachedContent.date === today;
   const autoGenerationsToday = isToday ? Number(cachedContent.autoGenerationsToday ?? 0) : 0;
   const manualRefreshesToday = isToday ? Number(cachedContent.manualRefreshesToday ?? 0) : 0;
-  const refreshesLeft = Math.max(0, 1 - manualRefreshesToday);
 
-  // Per user: max 1 manual refresh per day
-  if (manualRefreshesToday >= 1) {
-    // If the user already used their manual refresh today, return the cached result if available
+  const globalCount = await getDailyCount();
+  const refreshesLeft = globalCount >= DAILY_LIMIT
+    ? 0
+    : Math.max(0, MAX_MANUAL_REFRESHES - manualRefreshesToday);
+
+  // Per user: max manual refreshes per day
+  if (manualRefreshesToday >= MAX_MANUAL_REFRESHES || refreshesLeft === 0) {
+    // If the user already used their manual refreshes today, return the cached result if available
     if (cached && cached.aiGenerated && !isOldFormat(cachedContent)) {
       const cachedPoints = cachedContent.points as string[] | undefined;
       const cachedTips = cachedContent.tips as MergedTip[] | undefined;
@@ -343,7 +353,7 @@ export async function refreshInsights(userId: string): Promise<InsightResult> {
         dataHash: facts.dataHash,
       };
     }
-    return buildFallbackResult(facts, 0, new Date().toISOString(), "user_limit");
+    return buildFallbackResult(facts, 0, new Date().toISOString(), globalCount >= DAILY_LIMIT ? "quota_cap" : "user_limit");
   }
 
   if (facts.activeCount < 2 || facts.signals.length === 0) {
@@ -366,6 +376,7 @@ export async function refreshInsights(userId: string): Promise<InsightResult> {
     const aiResult = await callGemini(facts);
     const mergedTips = mergeTips(aiResult.tips, facts.signals);
     const newManualRefreshes = manualRefreshesToday + 1;
+    const remainingRefreshes = Math.max(0, MAX_MANUAL_REFRESHES - newManualRefreshes);
 
     const result: InsightResult = {
       statLine: buildStatLine(facts),
@@ -374,7 +385,7 @@ export async function refreshInsights(userId: string): Promise<InsightResult> {
       aiGenerated: true,
       cached: false,
       updatedAt: new Date().toISOString(),
-      refreshesLeft: 0,
+      refreshesLeft: remainingRefreshes,
       dataHash: facts.dataHash,
     };
 
