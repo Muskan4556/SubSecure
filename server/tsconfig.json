@@ -10,7 +10,7 @@
     "module": "CommonJS",
     "target": "esnext",
     "lib": ["esnext"],
-    "types": ["node"],
+    "types": ["node", "express"],
 
     // Other Outputs
     "sourceMap": true,
@@ -35,5 +35,6 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
-  }
+  },
+  "include": ["src/**/*"]
 }
