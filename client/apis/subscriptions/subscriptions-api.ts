@@ -1,9 +1,11 @@
 import { api } from "../axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { aiKeys, categoryKeys } from "../ai/ai-api";
 import type {
   AllBillingHistoryResponse,
   BillingHistoryResponse,
   CreateSubscriptionRequest,
+  SubscriptionCategory,
   SubscriptionListResponse,
   SubscriptionStatsResponse,
   UpdateSubscriptionRequest,
@@ -31,6 +33,7 @@ export const subscriptionKeys = {
 
 async function fetchSubscriptions(params?: {
   status?: "ACTIVE" | "CANCELLED";
+  category?: SubscriptionCategory;
 }): Promise<SubscriptionListResponse> {
   const res = await api.get("/api/subscriptions", { params });
   return res.data;
@@ -92,7 +95,10 @@ async function cancelSubscriptionApi(id: string) {
 
 // Hooks
 
-export function useSubscriptions(params?: { status?: "ACTIVE" | "CANCELLED" }) {
+export function useSubscriptions(params?: {
+  status?: "ACTIVE" | "CANCELLED";
+  category?: SubscriptionCategory;
+}) {
   return useQuery({
     queryKey: subscriptionKeys.list(params),
     queryFn: () => fetchSubscriptions(params),
@@ -142,6 +148,8 @@ export function useCreateSubscription() {
     mutationFn: createSubscriptionApi,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: subscriptionKeys.all });
+      qc.invalidateQueries({ queryKey: aiKeys.insights() });
+      qc.invalidateQueries({ queryKey: categoryKeys.byCategory() });
     },
   });
 }
@@ -152,6 +160,8 @@ export function useUpdateSubscription() {
     mutationFn: updateSubscriptionApi,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: subscriptionKeys.all });
+      qc.invalidateQueries({ queryKey: aiKeys.insights() });
+      qc.invalidateQueries({ queryKey: categoryKeys.byCategory() });
     },
   });
 }
@@ -162,6 +172,8 @@ export function useCancelSubscription() {
     mutationFn: cancelSubscriptionApi,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: subscriptionKeys.all });
+      qc.invalidateQueries({ queryKey: aiKeys.insights() });
+      qc.invalidateQueries({ queryKey: categoryKeys.byCategory() });
     },
   });
 }
