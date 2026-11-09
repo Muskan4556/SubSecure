@@ -37,6 +37,26 @@ enum BillingStatus {
   FAILED
 }
 
+enum SubscriptionCategory {
+  ENTERTAINMENT
+  MUSIC
+  PRODUCTIVITY
+  CLOUD_STORAGE
+  DEVELOPMENT
+  EDUCATION
+  HEALTH_FITNESS
+  NEWS_READING
+  GAMING
+  UTILITIES
+  FINANCE
+  OTHER
+}
+
+enum CategorySource {
+  RULE
+  USER
+}
+
 model User {
   id       String     @id @default(cuid())
   name     String
@@ -47,6 +67,7 @@ model User {
 
   subscriptions Subscription[]
   auditLogs     AuditLog[]
+  aiInsight     AiInsight?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,8 +78,9 @@ model Subscription {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  name     String
-  category String?
+  name           String
+  category       SubscriptionCategory @default(OTHER)
+  categorySource CategorySource       @default(RULE)
 
   amount Decimal @db.Decimal(10, 2)
 
@@ -77,6 +99,7 @@ model Subscription {
   @@index([userId])
   @@index([renewalDate])
   @@index([status])
+  @@index([userId, category])
 }
 
 model BillingHistory {
@@ -110,4 +133,24 @@ model AuditLog {
   @@index([userId])
   @@index([entityType])
   @@index([createdAt])
+}
+
+model AiInsight {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dataHash      String
+  content       Json
+  aiGenerated   Boolean  @default(true)
+  lastRefreshAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model AiDailyCount {
+  id    String @id @default(cuid())
+  date  String @unique
+  count Int    @default(0)
 }
