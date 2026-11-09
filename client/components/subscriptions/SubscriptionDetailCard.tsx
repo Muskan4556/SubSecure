@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,14 +53,14 @@ export function SubscriptionDetailCard({
 }: Props) {
   const [editing, setEditing] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<EditSubscriptionValues>({
+  const { register, handleSubmit, reset, control } = useForm<EditSubscriptionValues>({
     resolver: zodResolver(editSubscriptionSchema),
   });
 
   function startEdit() {
     reset({
       name: sub.name,
-      category: sub.category ?? "",
+      category: sub.category,
       amount: Number(sub.amount),
       billingCycle: sub.billingCycle,
       renewalDate: new Date(sub.renewalDate).toISOString().split("T")[0],
@@ -157,6 +157,7 @@ export function SubscriptionDetailCard({
       {editing ? (
         <SubscriptionEditForm
           register={register}
+          control={control}
           onSubmit={handleSubmit(handleEditSubmit)}
         />
       ) : (

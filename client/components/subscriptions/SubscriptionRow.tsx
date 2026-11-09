@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Clock } from "lucide-react";
 import type { Subscription, SubscriptionStatus } from "@/lib/types/subscription-types";
 import { formatAmount, formatDateShort } from "@/lib/utils/format";
+import { CategoryBadge } from "@/components/subscriptions/CategoryBadge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -119,10 +120,13 @@ export function SubscriptionRow({
           </Link>
         </div>
 
-        {/* Plan (category · cycle) */}
-        <span className="text-[12px] font-mono text-white/30 whitespace-nowrap truncate">
-          {plan}
-        </span>
+        {/* Plan (category badge + cycle) */}
+        <div className="flex items-center gap-2 min-w-0">
+          <CategoryBadge category={sub.category} size="xs" />
+          <span className="text-[12px] font-mono text-white/30 whitespace-nowrap">
+            {sub.billingCycle === "MONTHLY" ? "Monthly" : "Yearly"}
+          </span>
+        </div>
 
         {/* Cost */}
         <span className="text-[13px] font-mono text-white/60 text-right">
@@ -176,8 +180,11 @@ export function SubscriptionRow({
             >
               {sub.name}
             </Link>
-            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-              <span className="text-[11px] font-mono text-white/25">{plan}</span>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <CategoryBadge category={sub.category} size="xs" />
+              <span className="text-[11px] font-mono text-white/30">
+                {sub.billingCycle === "MONTHLY" ? "Monthly" : "Yearly"}
+              </span>
               {sub.status === "ACTIVE" && (
                 <span className={`text-[11px] font-mono flex items-center gap-1 ${daysUntil <= 7 ? "text-amber-400/70" : "text-white/20"}`}>
                   <Clock className="w-2.5 h-2.5" />

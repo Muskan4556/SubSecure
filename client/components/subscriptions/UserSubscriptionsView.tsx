@@ -8,7 +8,8 @@ import {
   useSubscriptions,
   useSubscriptionStats,
 } from "@/apis/subscriptions/subscriptions-api";
-import type { SubscriptionStatus } from "@/lib/types/subscription-types";
+import type { SubscriptionCategory, SubscriptionStatus } from "@/lib/types/subscription-types";
+import { SUBSCRIPTION_CATEGORIES } from "@/lib/validations/subscriptionValidation";
 import { toast } from "sonner";
 import { SubscriptionRow } from "@/components/subscriptions/SubscriptionRow";
 import { formatAmount } from "@/lib/utils/format";
@@ -20,7 +21,13 @@ export function UserSubscriptionsView() {
   const [statusFilter, setStatusFilter] = useState<
     SubscriptionStatus | undefined
   >(undefined);
-  const { data, isLoading } = useSubscriptions({ status: statusFilter });
+  const [categoryFilter, setCategoryFilter] = useState<
+    SubscriptionCategory | undefined
+  >(undefined);
+  const { data, isLoading } = useSubscriptions({
+    status: statusFilter,
+    category: categoryFilter,
+  });
   const { data: statsData } = useSubscriptionStats();
   const { mutate: cancel, isPending: cancelling } = useCancelSubscription();
 
@@ -131,21 +138,46 @@ export function UserSubscriptionsView() {
         </div>
       )}
 
-      {/* Filter tabs */}
-      <div className="flex gap-1">
-        {([undefined, "ACTIVE", "CANCELLED"] as const).map((s) => (
-          <button
-            key={String(s)}
-            onClick={() => setStatusFilter(s)}
-            className={`text-[11px] font-mono px-3 py-1.5 rounded-lg transition-colors ${
-              statusFilter === s
-                ? "bg-white/10 text-white/80"
-                : "text-white/30 hover:text-white/60 hover:bg-white/5"
-            }`}
+      {/* Filter controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex gap-1">
+          {([undefined, "ACTIVE", "CANCELLED"] as const).map((s) => (
+            <button
+              key={String(s)}
+              onClick={() => setStatusFilter(s)}
+              className={`text-[11px] font-mono px-3 py-1.5 rounded-lg transition-colors ${
+                statusFilter === s
+                  ? "bg-white/10 text-white/80"
+                  : "text-white/30 hover:text-white/60 hover:bg-white/5"
+              }`}
+            >
+              {s === undefined ? "All" : s === "ACTIVE" ? "Active" : "Cancelled"}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label className="text-[11px] font-mono text-white/30 uppercase tracking-wider">
+            Category:
+          </label>
+          <select
+            value={categoryFilter ?? ""}
+            onChange={(e) =>
+              setCategoryFilter(
+                e.target.value ? (e.target.value as SubscriptionCategory) : undefined,
+              )
+            }
+            style={{ colorScheme: "dark" }}
+            className="h-8 rounded-lg border border-white/10 bg-[#0d1525] px-2.5 text-[11px] font-mono text-white/80 focus:outline-none cursor-pointer"
           >
-            {s === undefined ? "All" : s === "ACTIVE" ? "Active" : "Cancelled"}
-          </button>
-        ))}
+            <option value="" className="bg-[#0d1525] text-white">All categories</option>
+            {SUBSCRIPTION_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat} className="bg-[#0d1525] text-white">
+                {cat.replace("_", " ")}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Table */}
