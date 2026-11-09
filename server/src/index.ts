@@ -8,6 +8,8 @@ import authRoute from "./routes/authRoute";
 import subscriptionRoute from "./routes/subscriptionsRoute";
 import adminRoute from "./routes/adminRoute";
 import userRoute from "./routes/users";
+import aiRoute from "./routes/aiRoute";
+import { validateAiConfig } from "./lib/ai/configValidator";
 import { generalRateLimiter } from "./middlewares/rateLimiter";
 import { startRecurringBillingJob } from "./jobs/processRecurringBilling";
 import { startRenewalReminderJob } from "./jobs/sendRenewalReminders";
@@ -42,8 +44,13 @@ app.use("/api/auth", authRoute);
 app.use("/api/subscriptions", subscriptionRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/users", userRoute);
+app.use("/api/ai", aiRoute);
 
 const PORT = Number(process.env.PORT) || 4000;
+
+if (process.env.AI_ENABLED !== "false") {
+  validateAiConfig();
+}
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
