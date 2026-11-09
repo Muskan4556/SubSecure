@@ -1,20 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Info, CheckCircle2 } from "lucide-react";
 import { useCreateSubscription } from "@/apis/subscriptions/subscriptions-api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { CategorySelect } from "@/components/subscriptions/CategorySelect";
+import { SUBSCRIPTION_CATEGORIES } from "@/lib/validations/subscriptionValidation";
 import { toast } from "sonner";
 
 const today = new Date().toISOString().split("T")[0];
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
-  category: z.string().trim().max(50).optional(),
+  category: z.enum(SUBSCRIPTION_CATEGORIES).optional(),
   amount: z
     .number({ message: "Enter a valid amount" })
     .positive("Must be positive"),
@@ -73,6 +75,7 @@ export default function NewSubscriptionPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -135,11 +138,17 @@ export default function NewSubscriptionPage() {
               />
             </Field>
 
-            <Field label="Category" error={errors.category?.message}>
-              <Input
-                {...register("category")}
-                placeholder="e.g. Design, Dev Tools, Entertainment"
-                className="bg-white/4 border-white/10 text-white/80 placeholder:text-white/20"
+            <Field label="Category" hint="Auto-detects from name if empty" error={errors.category?.message}>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <CategorySelect
+                    value={field.value}
+                    onChange={(val) => field.onChange(val)}
+                    includeAutoDetect
+                  />
+                )}
               />
             </Field>
 
@@ -161,10 +170,11 @@ export default function NewSubscriptionPage() {
               >
                 <select
                   {...register("billingCycle")}
-                  className="h-9 w-full rounded-md border border-white/10 bg-white/4 px-3 py-1 text-sm text-white/80 focus:outline-none focus:ring-2 focus:ring-white/20 appearance-none scheme-dark"
+                  style={{ colorScheme: "dark" }}
+                  className="h-9 w-full rounded-md border border-white/10 bg-white/4 px-3 py-1 text-sm text-white/80 focus:outline-none focus:ring-2 focus:ring-white/20 appearance-none cursor-pointer"
                 >
-                  <option value="MONTHLY">Monthly</option>
-                  <option value="YEARLY">Yearly</option>
+                  <option value="MONTHLY" className="bg-[#0d1525] text-white">Monthly</option>
+                  <option value="YEARLY" className="bg-[#0d1525] text-white">Yearly</option>
                 </select>
               </Field>
             </div>

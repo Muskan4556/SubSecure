@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,9 @@ import {
 } from "@/apis/subscriptions/subscriptions-api";
 import type { Subscription } from "@/lib/types/subscription-types";
 import { formatAmount, formatDateShort } from "@/lib/utils/format";
+import { CategoryBadge } from "@/components/subscriptions/CategoryBadge";
+import { InsightsCard } from "@/components/dashboard/InsightsCard";
+import { SpendByCategoryChart } from "@/components/dashboard/SpendByCategoryChart";
 
 function greeting() {
   const h = new Date().getHours();
@@ -175,104 +178,129 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Two-column: quick links + recent active subs */}
-      <div className="grid lg:grid-cols-[1fr_1.1fr] gap-6">
-        {/* Quick navigation */}
-        <div>
-          <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-3">
-            Quick access
-          </p>
-          <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
-            {QUICK_LINKS.map(({ icon: Icon, label, sub, href, alert }) => (
-              <Link
-                key={href}
-                href={href}
-                className="flex items-center gap-4 bg-[#0d1525] hover:bg-white/4 px-5 py-3.5 transition-colors group"
-              >
-                <div className="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-white/8 flex items-center justify-center shrink-0 transition-colors">
-                  <Icon className="w-3.5 h-3.5 text-white/40 group-hover:text-white/70" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-medium text-white/75 group-hover:text-white/90 transition-colors">
-                      {label}
-                    </span>
-                    {alert && (
-                      <span className="text-[10px] font-mono bg-amber-400/15 text-amber-400 px-1.5 py-px rounded-full">
-                        due soon
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-[11px] font-mono text-white/25 mt-0.5 truncate">
-                    {sub}
-                  </div>
-                </div>
-                <ArrowUpRight className="w-3.5 h-3.5 text-white/15 group-hover:text-white/40 shrink-0 transition-colors" />
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent active subscriptions */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em]">
-              Active subscriptions
+      {/* Main dashboard grid: 2-column layout on laptop & desktop */}
+      <div className="grid lg:grid-cols-2 gap-6 items-start">
+        {/* Left Column: Quick access + AI Spending Insights */}
+        <div className="space-y-6">
+          {/* Quick navigation */}
+          <div>
+            <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em] mb-3">
+              Quick access
             </p>
-            <Link
-              href="/dashboard/subscriptions"
-              className="text-[11px] font-mono text-white/20 hover:text-white/50 transition-colors"
-            >
-              View all →
-            </Link>
-          </div>
-          <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
-            {recentSubs.length === 0 ? (
-              <div className="bg-[#0d1525] px-5 py-6 text-center">
-                <p className="text-[12px] font-mono text-white/25">
-                  No active subscriptions
-                </p>
-                {user?.role === "USER" && (
-                  <Link
-                    href="/dashboard/subscriptions/new"
-                    className="text-[12px] font-mono text-blue-400/60 hover:text-blue-400 mt-1 block transition-colors"
-                  >
-                    Add your first →
-                  </Link>
-                )}
-              </div>
-            ) : (
-              recentSubs.map((sub) => (
+            <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
+              {QUICK_LINKS.map(({ icon: Icon, label, sub, href, alert }) => (
                 <Link
-                  key={sub.id}
-                  href={`/dashboard/subscriptions/${sub.id}`}
-                  className="flex items-center gap-3 bg-[#0d1525] hover:bg-white/4 px-5 py-3.5 group transition-colors"
+                  key={href}
+                  href={href}
+                  className="flex items-center gap-4 bg-[#0d1525] hover:bg-white/4 px-5 py-3.5 transition-colors group"
                 >
+                  <div className="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-white/8 flex items-center justify-center shrink-0 transition-colors">
+                    <Icon className="w-3.5 h-3.5 text-white/40 group-hover:text-white/70" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-medium text-white/75 group-hover:text-white/90 truncate transition-colors">
-                      {sub.name}
-                    </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      {sub.category && (
-                        <span className="text-[11px] font-mono text-white/25">
-                          {sub.category}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-medium text-white/75 group-hover:text-white/90 transition-colors">
+                        {label}
+                      </span>
+                      {alert && (
+                        <span className="text-[10px] font-mono bg-amber-400/15 text-amber-400 px-1.5 py-px rounded-full">
+                          due soon
                         </span>
                       )}
-                      <span className="text-[11px] font-mono text-white/20">
-                        renews {formatDateShort(sub.renewalDate)}
-                      </span>
+                    </div>
+                    <div className="text-[11px] font-mono text-white/25 mt-0.5 truncate">
+                      {sub}
                     </div>
                   </div>
-                  <div className="text-[13px] font-mono text-white/60 shrink-0">
-                    {formatAmount(sub.amount)}
-                    <span className="text-[11px] text-white/25">
-                      /{sub.billingCycle === "MONTHLY" ? "mo" : "yr"}
-                    </span>
-                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-white/15 group-hover:text-white/40 shrink-0 transition-colors" />
                 </Link>
-              ))
-            )}
+              ))}
+            </div>
           </div>
+
+          {/* AI Spending Insights */}
+          {user?.role === "USER" && <InsightsCard />}
+        </div>
+
+        {/* Right Column: Active subscriptions + Spend by category */}
+        <div className="space-y-6">
+          {/* Recent active subscriptions */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[11px] font-mono text-white/25 uppercase tracking-[0.15em]">
+                Active subscriptions
+              </p>
+              <Link
+                href="/dashboard/subscriptions"
+                className="text-[11px] font-mono text-white/20 hover:text-white/50 transition-colors"
+              >
+                View all →
+              </Link>
+            </div>
+            <div className="flex flex-col gap-px bg-white/5 rounded-xl overflow-hidden border border-white/6">
+              {recentSubs.length === 0 ? (
+                <div className="bg-[#0d1525] px-5 py-6 text-center">
+                  <p className="text-[12px] font-mono text-white/25">
+                    No active subscriptions
+                  </p>
+                  {user?.role === "USER" && (
+                    <Link
+                      href="/dashboard/subscriptions/new"
+                      className="text-[12px] font-mono text-blue-400/60 hover:text-blue-400 mt-1 block transition-colors"
+                    >
+                      Add your first →
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                recentSubs.map((sub) => (
+                  <Link
+                    key={sub.id}
+                    href={`/dashboard/subscriptions/${sub.id}`}
+                    className="flex items-center gap-3 bg-[#0d1525] hover:bg-white/4 px-5 py-3.5 group transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium text-white/75 group-hover:text-white/90 truncate transition-colors">
+                        {sub.name}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        {sub.category && (
+                          <CategoryBadge category={sub.category} size="xs" />
+                        )}
+                        <span className="text-[11px] font-mono text-white/20">
+                          renews {formatDateShort(sub.renewalDate)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-[13px] font-mono text-white/60 shrink-0">
+                      {formatAmount(sub.amount)}
+                      <span className="text-[11px] text-white/25">
+                        /{sub.billingCycle === "MONTHLY" ? "mo" : "yr"}
+                      </span>
+                    </div>
+                  </Link>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Spend by Category Chart */}
+          {user?.role === "USER" && (
+            <div className="bg-white/3 border border-white/8 rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-[11px] font-mono text-white/35 uppercase tracking-[0.15em]">
+                  Spend by category
+                </p>
+                <Link
+                  href="/dashboard/subscriptions"
+                  className="text-[11px] font-mono text-white/25 hover:text-white/60 transition-colors"
+                >
+                  Filter →
+                </Link>
+              </div>
+              <SpendByCategoryChart />
+            </div>
+          )}
         </div>
       </div>
     </div>
