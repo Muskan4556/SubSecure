@@ -3,6 +3,7 @@ import { buildFacts } from "./factsBuilder";
 import { callGemini, AiError } from "./geminiWrapper";
 import { getDailyCount, incrementDailyCount } from "./dailyCounter";
 import type { InsightFactsWithHash, InsightSignal, SignalSavings } from "./factsBuilder";
+import type { RawAiInsightItem } from "./insightSchema";
 
 const AI_ENABLED = process.env.AI_ENABLED !== "false";
 const DAILY_LIMIT = Number(process.env.AI_DAILY_REQUEST_LIMIT ?? 12);
@@ -24,15 +25,10 @@ export function toTitleCase(str: string): string {
     .join(" ");
 }
 
-function formatRenewalDate(isoDate?: string): string {
-  if (!isoDate) return "soon";
-  const d = new Date(isoDate);
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }); // e.g. "1 Dec"
-}
-
-export interface MergedTip {
-  signalId: string;
-  reason: string;
+export interface MergedInsight {
+  signalId: string | null;
+  title: string;
+  detail: string;
   subscriptionIds: string[];
   savings: SignalSavings | null;
 }
@@ -40,9 +36,8 @@ export interface MergedTip {
 export interface InsightResult {
   /** Code-built headline: "₹2,322/mo · ₹27,860/yr · 5 subscriptions" */
   statLine: string;
-  /** AI or rule-based scannable bullet points */
-  points: string[];
-  tips: MergedTip[];
+  /** Single list of 3-4 insight items */
+  insights: MergedInsight[];
   aiGenerated: boolean;
   cached: boolean;
   updatedAt: string;
@@ -60,124 +55,125 @@ export function buildStatLine(facts: InsightFactsWithHash): string {
   return `₹${mo}/mo · ₹${yr}/yr · ${n} subscription${n !== 1 ? "s" : ""}`;
 }
 
-export function mergeTips(
-  rawTips: Array<{ signalId: string; reason: string }>,
+/**
+ * Merge raw insights from AI with code signals:
+ * Attach subscriptionIds and savings when signalId matches.
+ * Drop unknown signalIds to null, keep the item.
+ */
+export function mergeInsights(
+  rawInsights: RawAiInsightItem[],
   signals: InsightSignal[],
-): MergedTip[] {
+): MergedInsight[] {
   const signalMap = new Map(signals.map((s) => [s.id, s]));
-  const merged: MergedTip[] = [];
+  const merged: MergedInsight[] = [];
 
-  for (const raw of rawTips) {
-    const signal = signalMap.get(raw.signalId);
-    if (!signal) {
-      console.warn(`[AI Insights] Dropping tip with unknown signalId: ${raw.signalId}`);
-      continue;
-    }
+  for (const raw of rawInsights) {
+    const signal = raw.signalId ? signalMap.get(raw.signalId) : undefined;
     merged.push({
-      signalId: signal.id,
-      reason: raw.reason,
-      subscriptionIds: signal.subscriptionIds,
-      savings: signal.savings,
+      signalId: signal ? signal.id : null,
+      title: raw.title.slice(0, 60),
+      detail: raw.detail.slice(0, 180),
+      subscriptionIds: signal ? signal.subscriptionIds : [],
+      savings: signal ? signal.savings : null,
     });
   }
 
-  return merged.slice(0, 3);
+  return merged.slice(0, 4);
 }
 
 /**
- * Build rule-based bullet points from facts.
- * Includes: (a) every overlap group, (b) any single sub or category with share >= 30%,
- * (c) a total fallback line if fewer than 2 points qualify. Max 4 points.
+ * Build rule-based insights using templates for signals.
+ * Fallback when AI is unavailable or quota reached.
  */
-export function buildFallbackPoints(facts: InsightFactsWithHash): string[] {
-  const points: string[] = [];
-  const coveredCategories = new Set<string>();
+export function buildFallbackInsights(facts: InsightFactsWithHash): MergedInsight[] {
+  const insights: MergedInsight[] = [];
 
-  // (a) Overlap groups — always include, one point per group
-  for (const sig of facts.signals) {
-    if (sig.type !== "OVERLAP" || points.length >= 4) continue;
-    const catLabel = toTitleCase(sig.category ?? "");
-    const names = (sig.names ?? []).join(" + ");
-    const catDetail = facts.categories.find((c) => c.category === sig.category);
-    const share = catDetail?.share ?? 0;
-    const combined = sig.combinedMonthly?.toLocaleString("en-IN") ?? "";
-    const p = `${names} = ₹${combined}/mo in ${catLabel} (${share}% of your bill)`;
-    points.push(p.slice(0, 120));
-    if (sig.category) coveredCategories.add(sig.category);
-  }
-
-  // (b) Single subscription or category with share >= 30%, not already covered
-  for (const cat of facts.categories) {
-    if (points.length >= 4) break;
-    if (coveredCategories.has(cat.category)) continue;
-    if (cat.share < 30) continue; // skip low-share items (e.g. Github at 16%)
-
-    const catLabel = toTitleCase(cat.category);
-    let p: string;
-    if (cat.items.length >= 2) {
-      const names = cat.items.map((i) => i.name).join(" + ");
-      p = `${names} = ₹${cat.monthly.toLocaleString("en-IN")}/mo in ${catLabel} (${cat.share}% of your bill)`;
-    } else if (cat.items[0]) {
-      p = `${cat.items[0].name}: ₹${cat.monthly.toLocaleString("en-IN")}/mo — ${catLabel} at ${cat.share}% of your bill`;
-    } else {
-      continue;
-    }
-    points.push(p.slice(0, 120));
-    coveredCategories.add(cat.category);
-  }
-
-  // (c) Total fallback if fewer than 2 points qualify
-  if (points.length < 2 && facts.activeCount > 0) {
-    points.push(
-      `₹${facts.monthlyTotal.toLocaleString("en-IN")}/mo across ${facts.activeCount} subscription${facts.activeCount !== 1 ? "s" : ""}`,
-    );
-  }
-
-  return points.slice(0, 4);
-}
-
-/** Build rule-based tips from signals with question-style templates */
-export function buildFallbackTips(signals: InsightSignal[]): MergedTip[] {
-  return signals.slice(0, 3).map((sig) => {
-    let reason = "";
-
+  for (const sig of facts.signals.slice(0, 4)) {
     if (sig.type === "OVERLAP") {
-      const names = sig.names && sig.names.length > 0 ? sig.names : ["these services"];
-      if (names.length === 2) {
-        reason = `You pay for ${names[0]} and ${names[1]}. Do you use both?`;
-      } else {
-        reason = `You pay for ${names.join(", ")}. Do you use all of them?`;
-      }
+      const names = sig.names && sig.names.length > 0 ? sig.names : ["Subscriptions"];
+      const prefix = names.length === 2 ? "Two" : String(names.length);
+      const catLabel = toTitleCase(sig.category ?? "Streaming");
+      const title = `${prefix} ${catLabel.toLowerCase()} services: ${names.join(" + ")}`.slice(0, 60);
+      const sum = sig.combinedMonthly?.toLocaleString("en-IN") ?? "0";
+      const yr = sig.yearly?.toLocaleString("en-IN") ?? "0";
+      const detail = `Together ₹${sum}/mo (₹${yr}/yr). Do you use ${names.length === 2 ? "both" : "all of them"}?`.slice(0, 180);
+
+      insights.push({
+        signalId: sig.id,
+        title,
+        detail,
+        subscriptionIds: sig.subscriptionIds,
+        savings: sig.savings,
+      });
+    } else if (sig.type === "CLUSTER") {
+      const count = sig.count ?? sig.names?.length ?? 3;
+      const title = `${count} renewals on ${sig.date}`.slice(0, 60);
+      const total = sig.total?.toLocaleString("en-IN") ?? "0";
+      const detail = `₹${total} leaves your account that day. Make sure it is covered.`.slice(0, 180);
+
+      insights.push({
+        signalId: sig.id,
+        title,
+        detail,
+        subscriptionIds: sig.subscriptionIds,
+        savings: null,
+      });
     } else if (sig.type === "CONCENTRATION") {
-      // "concentration-sub-{uuid}" is subscription-level; "concentration-{CATEGORY}" is category-level
-      const isCategoryLevel =
-        sig.id.startsWith("concentration-") && !sig.id.startsWith("concentration-sub-");
-      const name = isCategoryLevel
-        ? toTitleCase(sig.subjectName ?? "")
-        : (sig.subjectName ?? "This subscription");
-      reason = `${name} is ${sig.share}% of your bill. Is the plan size right for you?`;
+      const name = sig.subjectName ? toTitleCase(sig.subjectName) : "One service";
+      const title = `${name} is ${sig.share}% of your bill`.slice(0, 60);
+      const mo = sig.monthlyAmount?.toLocaleString("en-IN") ?? "0";
+      const yr = sig.yearly?.toLocaleString("en-IN") ?? "0";
+      const detail = `Costs ₹${mo}/mo (₹${yr}/yr). Is the plan size right for you?`.slice(0, 180);
+
+      insights.push({
+        signalId: sig.id,
+        title,
+        detail,
+        subscriptionIds: sig.subscriptionIds,
+        savings: null,
+      });
     } else if (sig.type === "RENEWAL_SOON") {
       const name = sig.subjectName ?? "A subscription";
-      const date = formatRenewalDate(sig.renewalDate);
-      const amount = sig.monthlyAmount
-        ? `₹${sig.monthlyAmount.toLocaleString("en-IN")}`
-        : "";
-      reason = amount
-        ? `${name} renews on ${date} (${amount}). Still using it?`
-        : `${name} renews on ${date}. Still using it?`;
-    } else {
-      reason = "Review your subscription to optimize spending.";
+      const title = `${name} renews on ${sig.date}`.slice(0, 60);
+      const mo = sig.monthlyAmount?.toLocaleString("en-IN") ?? "0";
+      const detail = `₹${mo} due soon (~₹${sig.perDay}/day). Still actively using it?`.slice(0, 180);
+
+      insights.push({
+        signalId: sig.id,
+        title,
+        detail,
+        subscriptionIds: sig.subscriptionIds,
+        savings: null,
+      });
     }
+  }
 
-    if (reason.length > 120) reason = reason.slice(0, 117) + "...";
+  // Add top category or overall spend if fewer than 2 insights
+  if (insights.length < 2 && facts.categories.length > 0) {
+    const topCat = facts.categories[0];
+    if (topCat && !insights.some((i) => i.title.toLowerCase().includes(topCat.category.toLowerCase()))) {
+      const catLabel = toTitleCase(topCat.category);
+      insights.push({
+        signalId: null,
+        title: `${catLabel} is ${topCat.share}% of your spend`.slice(0, 60),
+        detail: `₹${topCat.monthly.toLocaleString("en-IN")}/mo across ${topCat.items.length} service${topCat.items.length > 1 ? "s" : ""}.`.slice(0, 180),
+        subscriptionIds: [],
+        savings: null,
+      });
+    }
+  }
 
-    return {
-      signalId: sig.id,
-      reason,
-      subscriptionIds: sig.subscriptionIds,
-      savings: sig.savings,
-    };
-  });
+  if (insights.length === 0 && facts.activeCount > 0) {
+    insights.push({
+      signalId: null,
+      title: `${facts.activeCount} active subscriptions`.slice(0, 60),
+      detail: `Total spend is ₹${facts.monthlyTotal.toLocaleString("en-IN")}/mo (₹${facts.yearlyTotal.toLocaleString("en-IN")}/yr, ~₹${facts.perDayTotal}/day).`.slice(0, 180),
+      subscriptionIds: [],
+      savings: null,
+    });
+  }
+
+  return insights.slice(0, 4);
 }
 
 export function buildFallbackResult(
@@ -191,8 +187,7 @@ export function buildFallbackResult(
   }
   const base: InsightResult = {
     statLine: buildStatLine(facts),
-    points: facts.activeCount < 2 ? [] : buildFallbackPoints(facts),
-    tips: facts.activeCount < 2 ? [] : buildFallbackTips(facts.signals),
+    insights: facts.activeCount < 2 ? [] : buildFallbackInsights(facts),
     aiGenerated: false,
     cached: false,
     updatedAt,
@@ -203,12 +198,12 @@ export function buildFallbackResult(
   return base;
 }
 
-/** Detect if cached content is old schema (had summary/highlights/suggestions, no points) */
+/** Detect if cached content is old schema (points/tips or summary/highlights) */
 function isOldFormat(content: Record<string, unknown>): boolean {
   return (
-    typeof content.summary === "string" &&
-    !Array.isArray(content.points) &&
-    (Array.isArray(content.highlights) || Array.isArray(content.suggestions))
+    !Array.isArray(content.insights) ||
+    typeof content.summary === "string" ||
+    Array.isArray(content.points)
   );
 }
 
@@ -221,7 +216,7 @@ export async function getInsights(userId: string): Promise<InsightResult> {
   const isToday = cachedContent.date === today;
   const autoGenerationsToday = isToday ? Number(cachedContent.autoGenerationsToday ?? 0) : 0;
   const manualRefreshesToday = isToday ? Number(cachedContent.manualRefreshesToday ?? 0) : 0;
-  
+
   const globalCount = await getDailyCount();
   const refreshesLeft = globalCount >= DAILY_LIMIT
     ? 0
@@ -231,15 +226,13 @@ export async function getInsights(userId: string): Promise<InsightResult> {
   if (cached && cached.aiGenerated && !isOldFormat(cachedContent)) {
     const age = Date.now() - cached.updatedAt.getTime();
     if (cached.dataHash === facts.dataHash && age < CACHE_TTL_MS) {
-      const cachedPoints = cachedContent.points as string[] | undefined;
-      const cachedTips = cachedContent.tips as MergedTip[] | undefined;
+      const cachedInsights = cachedContent.insights as MergedInsight[] | undefined;
       return {
         statLine: buildStatLine(facts),
-        points:
-          Array.isArray(cachedPoints) && cachedPoints.length > 0
-            ? cachedPoints
-            : buildFallbackPoints(facts),
-        tips: Array.isArray(cachedTips) ? cachedTips : [],
+        insights:
+          Array.isArray(cachedInsights) && cachedInsights.length > 0
+            ? cachedInsights
+            : buildFallbackInsights(facts),
         aiGenerated: true,
         cached: true,
         updatedAt: cached.updatedAt.toISOString(),
@@ -264,8 +257,7 @@ export async function getInsights(userId: string): Promise<InsightResult> {
   }
 
   // App-wide daily cap
-  const count = await getDailyCount();
-  if (count >= DAILY_LIMIT) {
+  if (globalCount >= DAILY_LIMIT) {
     return buildFallbackResult(facts, refreshesLeft, new Date().toISOString(), "quota_cap");
   }
 
@@ -274,12 +266,11 @@ export async function getInsights(userId: string): Promise<InsightResult> {
 
   try {
     const aiResult = await callGemini(facts);
-    const mergedTips = mergeTips(aiResult.tips, facts.signals);
+    const mergedInsights = mergeInsights(aiResult.insights, facts.signals);
 
     const result: InsightResult = {
       statLine: buildStatLine(facts),
-      points: aiResult.points,
-      tips: mergedTips,
+      insights: mergedInsights,
       aiGenerated: true,
       cached: false,
       updatedAt: new Date().toISOString(),
@@ -335,17 +326,14 @@ export async function refreshInsights(userId: string): Promise<InsightResult> {
 
   // Per user: max manual refreshes per day
   if (manualRefreshesToday >= MAX_MANUAL_REFRESHES || refreshesLeft === 0) {
-    // If the user already used their manual refreshes today, return the cached result if available
     if (cached && cached.aiGenerated && !isOldFormat(cachedContent)) {
-      const cachedPoints = cachedContent.points as string[] | undefined;
-      const cachedTips = cachedContent.tips as MergedTip[] | undefined;
+      const cachedInsights = cachedContent.insights as MergedInsight[] | undefined;
       return {
         statLine: buildStatLine(facts),
-        points:
-          Array.isArray(cachedPoints) && cachedPoints.length > 0
-            ? cachedPoints
-            : buildFallbackPoints(facts),
-        tips: Array.isArray(cachedTips) ? cachedTips : [],
+        insights:
+          Array.isArray(cachedInsights) && cachedInsights.length > 0
+            ? cachedInsights
+            : buildFallbackInsights(facts),
         aiGenerated: true,
         cached: true,
         updatedAt: cached.updatedAt.toISOString(),
@@ -364,8 +352,7 @@ export async function refreshInsights(userId: string): Promise<InsightResult> {
     return buildFallbackResult(facts, refreshesLeft, new Date().toISOString(), "ai_disabled");
   }
 
-  const count = await getDailyCount();
-  if (count >= DAILY_LIMIT) {
+  if (globalCount >= DAILY_LIMIT) {
     return buildFallbackResult(facts, refreshesLeft, new Date().toISOString(), "quota_cap");
   }
 
@@ -374,14 +361,13 @@ export async function refreshInsights(userId: string): Promise<InsightResult> {
 
   try {
     const aiResult = await callGemini(facts);
-    const mergedTips = mergeTips(aiResult.tips, facts.signals);
+    const mergedInsights = mergeInsights(aiResult.insights, facts.signals);
     const newManualRefreshes = manualRefreshesToday + 1;
     const remainingRefreshes = Math.max(0, MAX_MANUAL_REFRESHES - newManualRefreshes);
 
     const result: InsightResult = {
       statLine: buildStatLine(facts),
-      points: aiResult.points,
-      tips: mergedTips,
+      insights: mergedInsights,
       aiGenerated: true,
       cached: false,
       updatedAt: new Date().toISOString(),
@@ -417,7 +403,6 @@ export async function refreshInsights(userId: string): Promise<InsightResult> {
   } catch (err) {
     const reason = err instanceof AiError ? err.reason : "provider_error";
     console.error(`[AI Insights] Refresh AI call failed (${reason}):`, (err as Error).message);
-    // Failed calls do not count against the user limit, so refreshesLeft remains unchanged
     return buildFallbackResult(facts, refreshesLeft, new Date().toISOString(), reason);
   }
 }
